@@ -14,7 +14,7 @@ npm install discord-vote
 ```
 
 ## Ejemplo de uso en el Modo Normal
-> Notas: _En en modo "normal", en caso de que el bot se desconecte, se perdera todo el progreso de las votaciones que no hayan terminado. En el modo "Avanzado" no._
+> Notas: _En en modo "normal", en caso de que el bot se desconecte, se perdera todo el progreso de las votaciones que no hayan terminado. En el modo "Avanzado" no se perdera ningun progreso._
 ```javascript
 const DiscordVote = require('discord-vote');
 const votacion = new DiscordVote({ client:client, mode:0); //El cliente, modo (0 = normal, 1 = avanzado)
