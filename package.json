@@ -1,0 +1,29 @@
+{
+  "name": "discord-vote",
+  "version": "1.0.0",
+  "description": "Paquete para crear un sistema de votaciones simple y sencillo para discord.js 14",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit 1",
+    "build": "npm pack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Papela/discord-vote.git"
+  },
+  "keywords": [
+    "discord",
+    "vote",
+    "discordjs",
+    "discord-bot",
+    "discord-vote",
+    "discord-voting"
+  ],
+  "author": "Papela",
+  "license": "LGPL-3.0-only",
+  "homepage": "https://github.com/Papela/discord-vote#readme",
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "fs": "^0.0.1-security"
+  }
+}

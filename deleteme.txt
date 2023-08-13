@@ -1,1 +1,0 @@
-Fichero para el primer commit para poder usarlo con GitHub CodeSpaces
