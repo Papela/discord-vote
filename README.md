@@ -1,7 +1,7 @@
 # Discord-vote
 
-[![npm version](https://img.shields.io/npm/v/discord-votaciones.svg)](https://www.npmjs.com/package/discord-vote)
-[![license](https://img.shields.io/npm/l/discord-votaciones.svg)](https://github.com/Papela/discord-vote/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/discord-vote.svg)](https://www.npmjs.com/package/discord-vote)
+[![license](https://img.shields.io/npm/l/discord-vote.svg)](https://github.com/Papela/discord-vote/blob/main/LICENSE)
 
 Un paquete NPM para poder tener un sistema de votaciones para Discord.js 14 de manera sencilla.
 
