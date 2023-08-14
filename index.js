@@ -1,5 +1,6 @@
-//USAR RAMAS PARA FUTURAS UPDATES!!
-//TODO Probar que los nuevos cambios y todo funcione.
+//USAR RAMAS PARA LAS UPDATES!!
+//TODO Añadir el tiempo restante a las votaciones?
+//FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 //Añadir opciones de idiomas?
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const fs = require("fs");
@@ -33,7 +34,7 @@ class DiscordVote {
 
     if (this.mode == 0) {
       if(duration == 0)
-        console.warn(`Estas usando el modo "Normal" con un tiempo de 0. Esto es poco recomendable, si el bot deja de funcionar, las votaciones anteriores, dejaran de funcionar!`);
+        console.warn(`Estas usando el modo "Normal" con un tiempo de 0. Esto es poco recomendable ya que si el bot deja de funcionar, las votaciones anteriores, dejaran de funcionar!`);
     const filter = (interaction) => interaction.customId === 'dvote-yes' || interaction.customId === 'dvote-no';
     const row = new ActionRowBuilder()
       .addComponents(
@@ -48,18 +49,17 @@ class DiscordVote {
       );
 
       let Votacion = null;
-      let autorUsername = message.author.username;
       if(duration != 0){
       Votacion = new EmbedBuilder()
           .setTitle(title)
-          .setFooter({ text: `Votacion iniciada por ` + autorUsername})
+          .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
           .setColor(8463563)
           .setTimestamp();
       }else{
         Votacion = new EmbedBuilder()
         .setTitle(title)
         .setColor(8463563)
-        .setFooter({ text: `Votacion iniciada por ` + autorUsername + `! Los resultados seran la cantidad de reacciones en el momento deseado.`})
+        .setFooter({ text: `Votacion iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`})
         .setTimestamp();
       }
        const voteMessage = await message.channel.send({ embeds: [Votacion], components: [row] })
@@ -128,13 +128,19 @@ class DiscordVote {
           }else{
             color = 16776960
           }
-        const VotacionResultados = new EmbedBuilder()
-              .setTitle(title)
-              .setDescription(`Resultados actuales de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos`)
-              .setColor(color)
-              //.setFooter(`Votacion sin tiempo definido iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`)
-              .setTimestamp();
-              voteMessage.edit({ embeds: [VotacionResultados] });
+          message.channel.messages.fetch(voteMessage).then((fetchedMessage) => {
+            if (fetchedMessage) {
+              const VotacionResultados = new EmbedBuilder()
+                .setTitle(title)
+                .setDescription(`Resultados actuales de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos\nEsta votacion todavía no ha finalizado!`)
+                .setColor(color)
+                .setTimestamp();
+                voteMessage.edit({ embeds: [VotacionResultados] });
+            }else{
+              if(debug)
+              console.debug("El mensaje de la votacion dejo de existir!");
+            }
+            });
       }
     });
 
@@ -147,12 +153,19 @@ class DiscordVote {
       }else{
         color = 16776960
       }
-      const VotacionResultados = new EmbedBuilder()
+      message.channel.messages.fetch(voteMessage).then((fetchedMessage) => {
+      if (fetchedMessage) {
+        const VotacionResultados = new EmbedBuilder()
               .setTitle(title)
               .setDescription(`Resultados de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos`)
               .setColor(color)
               .setTimestamp();
               voteMessage.edit({ embeds: [VotacionResultados], components: [] });
+      }else{
+        if(debug)
+        console.debug("El mensaje de la votacion dejo de existir!");
+      }
+      });
     });
   }else if (this.mode == 1) {
     if ((!this.savePath) || (this.savePath == null) || (!this.savePath.includes(".json"))) {
@@ -178,12 +191,11 @@ class DiscordVote {
         const endTime = new Date(startTime.getTime() + duration * 60000); // Calcula la fecha y hora de finalización de la votación
         let channelId = message.channel.id;
         let Votacion = null;
-        let autorUsername = message.author.username;
         if(duration == 0){
           Votacion = new EmbedBuilder()
             .setTitle(title)
             .setColor(8463563)
-            .setFooter({ text: `Votacion iniciada por ` + autorUsername + `! Los resultados seran la cantidad de reacciones en el momento deseado.`})
+            .setFooter({ text: `Votacion iniciada por ${message.author.username}!`})
             .setTimestamp(endTime);
         }else{
           Votacion = new EmbedBuilder()
@@ -196,7 +208,7 @@ class DiscordVote {
           message.channel.send({ embeds: [Votacion] }).then(message => {
             const votacionData = fs.readFileSync(this.savePath, 'utf8');
             let votaciones = JSON.parse(votacionData);
-      if(duration != 0){
+         if(duration != 0){
             votaciones[message.id] = {
               nombreServer: message.guild.name, // Guardar el nombre del servidor
               idMensaje: message.id, // Guardar el ID del mensaje de votación
@@ -206,21 +218,27 @@ class DiscordVote {
               fechaInicio: startTime.toISOString(), // Guardar la fecha y hora de inicio en formato ISO
               fechaFin: endTime.toISOString() // Guardar la fecha y hora de finalización en formato ISO
             };
+          }else{
+            votaciones[message.id] = {
+              nombreServer: message.guild.name, // Guardar el nombre del servidor
+              idMensaje: message.id, // Guardar el ID del mensaje de votación
+              idServer: message.guild.id,
+              idCanal: channelId, //Guardar el ID del canal de votacion
+              titulo: title,
+              fechaInicio: startTime.toISOString(), // Guardar la fecha y hora de inicio en formato ISO
+              fechaFin: null // Guardar la fecha y hora de finalización en formato ISO
+          }
+        }
       if(debug)
-       console.debug("Votacion: " + String(votaciones[message.id]));
+       console.debug("Votacion: " + JSON.stringify(votaciones[message.id]));
           fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
           if (err) {
             console.error(err);
-          } else {
-            if(debug)
-            console.debug("Votacion iniciada!");
           }
         });
-      }else{
+      
         if(debug)
             console.debug("Votacion iniciada!");
-      }
-          
         message.react("✅");
         message.react("❌");
         });
@@ -258,12 +276,13 @@ class DiscordVote {
       // Recorrer todas las votaciones almacenadas
       for (const idMensaje in votaciones) {
         if(debug)
-        console.debug("Comprobando (ID del Mensaje): " + String(votaciones[idMensaje]));
+        console.debug("Comprobando (ID del Mensaje): " + votaciones[idMensaje].idMensaje);
         const votacion = votaciones[idMensaje];
         const endTime = new Date(votacion.fechaFin); // Obtener la fecha y hora de finalización de la votación
         //console.log("Hora actual: " + currentTime.getHours() +":" + currentTime.getMinutes() + ", endTime: " + endTime.getHours() +":" + endTime.getMinutes());
         if(debug)
             console.debug("Hora actual: " + currentTime.getHours() +":" + currentTime.getMinutes() + ", Fecha Fin: " + endTime.getHours() +":" + endTime.getMinutes());
+          if(votacion.fechaFin != null){
         // Comprobar si la hora actual es igual a la hora de finalización de la votaciónvotaciones:
         if ((currentTime.getFullYear() >= endTime.getFullYear() &&
             currentTime.getMonth() >= endTime.getMonth() &&
@@ -366,6 +385,92 @@ class DiscordVote {
             })
             .catch(console.error);
         }
+      }else{
+          //CON TIEMPO A 0
+        if(this.debug)
+        console.debug("Actualizando votacion con tiempo a 0");
+
+      const messageId = votacion.idMensaje; // Obtener el ID del mensaje de votación
+        let server = client.guilds.cache.get(votacion.idServer);
+        if(!server){
+          console.warn(`No se ha encontrado el servidor con el ID: ${votacion.idServer}`);
+          delete votaciones[idMensaje];
+          fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
+              if (err) {
+                return console.error("Error: " + err);
+              } else {
+                if(debug)
+                return console.debug("No se ha encontrado el servidor. Votacion Finalizada!");
+              }
+            });
+        }
+        let channel = server.channels.cache.get(votacion.idCanal); // Obtener el canal correspondiente
+        if (!channel) {
+          console.warn(`No se ha encontrado el canal con ID ${votacion.idCanal}`);
+          delete votaciones[idMensaje];
+          fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
+              if (err) {
+                return console.error("Error: " + err);
+              } else {
+                if(debug)
+                return console.debug("No se ha encontrado el canal. Votacion Finalizada!");
+              }
+            });
+        }
+        // Obtener el mensaje de votación utilizando el ID del mensaje
+        let mensajeVotacion = channel.messages.fetch(messageId);
+        if(!mensajeVotacion){
+          console.warn(`No se ha encontrado el mensaje con ID ${votacion.idCanal}`);
+          delete votaciones[idMensaje];
+          fs.writeFile(ruta, JSON.stringify(votaciones, null, 2), err => {
+              if (err) {
+                console.error("Error: " + err);
+              } else {
+                if(debug)
+                return console.debug("No se ha encontrado el mensaje. Votacion Finalizada!");
+              }
+            });
+        }
+        channel.messages.fetch(messageId).then(async message => {
+          // Obtener la cantidad de reacciones de cada tipo
+          const reactions = message.reactions.cache;
+          
+          const upvoteUsers = await reactions.get("✅").users.fetch();
+          const downvoteUsers = await reactions.get("❌").users.fetch();
+        
+          // Eliminar las reacciones de los usuarios que hayan reaccionado con ambos emojis
+          const usersToRemove = upvoteUsers.filter(user => downvoteUsers.has(user.id));
+          usersToRemove.forEach(user => {
+            if (user.bot) return;
+            reactions.get("✅").users.remove(user.id);
+            reactions.get("❌").users.remove(user.id);
+          });
+            
+            const upvotes = reactions.get("✅").count - 1; // Restar 1 para excluir la reacción del bot
+            const downvotes = reactions.get("❌").count - 1; // Restar 1 para excluir la reacción del bot
+            if(debug)
+              console.debug("Resultados actuales (despues de eliminar las no validas, las repetidas): ✅=" + upvotes + " ❌=" + downvotes);
+
+            let color = 8463563;
+          if(upvotes > downvotes){
+            color = 5763719
+          }else if(upvotes < downvotes){
+            color = 15548997
+          }else{
+            color = 16776960
+          }
+          
+            // Editar el mensaje de votación con los resultados
+            const VotacionResultados = new EmbedBuilder()
+              .setTitle(votacion.titulo)
+              .setDescription(`Resultados actuales de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\nEsta votacion todavía no ha finalizado!`)
+              .setColor(color)
+              .setTimestamp();
+              await message.edit({ embeds: [VotacionResultados] });
+          })
+          .catch(console.error);
+      }
+        
       }
     });
   }
