@@ -17,12 +17,14 @@ npm install discord-vote
 > Notas: _En en modo "normal", en caso de que el bot se desconecte, se perdera todo el progreso de las votaciones que no hayan terminado. En el modo "Avanzado" no se perdera ningun progreso._
 ```javascript
 const DiscordVote = require('discord-vote');
-const votacion = new DiscordVote({ client:client, mode:0); //El cliente, modo (0 = normal, 1 = avanzado)
+const votacion = new DiscordVote({
+    client:client, //El cliente
+    mode:0}); //Modo de votacion. (0 = Normal, 1 = Avanzado)
 client.on('messageCreate', async (message) => {
       if (message.content.startsWith("!votacion")) {
         if (args.length >= 2) {
           const duration = args[0]; //Tiempo en minutos
-          const title = args.slice(1).join(" ");
+          const title = args.slice(1).join(" "); // Titulo de la votacion
   
           votacion.createVote(message, title, duration);
         } else {
@@ -37,16 +39,19 @@ client.login("TOKEN DEL BOT");
 
 ```javascript
 const DiscordVote = require('discord-vote');
-const votacion = new DiscordVote({ client:client, mode:1, savePath: './votaciones.json', checkTime: 10000});
-/*El cliente, modo de votacion (0 = normal, 1 = avanzado), ruta de guardado (avanzado), tiempo de comprobacion (Avanzado).
-*Todo lo del modo avanzado es completamente opcional.*/
-votacion.checkVotaciones(); //Para llamar a la funcion que comprueba las votaciones usando checkTime (por defeto 1 Minuto). *Necesario al usar el modo avanzado
+const votacion = new DiscordVote({
+  client:client, //El cliente
+  mode:1, //Modo de votacion. (0 = Normal, 1 = Avanzado)
+  savePath: './votaciones.json', //Ruta de guardado (Avanzado)
+  checkTime: 10000}); //tiempo de comprobacion (Avanzado)
+//*Todo lo del modo avanzado es completamente opcional.*/
+votacion.checkVotaciones(); //Utilizado para llamar a la funcion que comprueba las votaciones usando checkTime (por defeto 1 Minuto). *Necesario al usar el modo avanzado
 
 client.on('messageCreate', async (message) => {
       if (message.content.startsWith("!votacion")) {
         if (args.length >= 2) {
           const duration = args[0]; //Tiempo en minutos
-          const title = args.slice(1).join(" ");
+          const title = args.slice(1).join(" "); // Titulo de la votacion
   
           votacion.createVote(message, title, duration);
         } else {
@@ -54,21 +59,26 @@ client.on('messageCreate', async (message) => {
         }
       }
 
-client.login("your-token-goes-here");
+client.login("TOKEN DEL BOT";
 ```
 
 ## Funciones
 ```javascript
-+ createVote(message, title, duration);
++ createVote(message, title, duration, savePath, debug);
 + checkVotaciones();
++ checkVotacionManual();
 ```
 #### createVote
 _Inicia una votación con la duración, título y canal especificados._
 - *message*: Mensaje del la accion que tiene el cliente. (client.on('messageCreate',async(message) => {})En algunos casos puede ser: "msg"
-- *duration*: Duración de la votación en minutos.
 - *title*: Título de la votación.
+- *duration*: Duración de la votación en minutos.
+- *savePath*: Ruta de guardado personalizado. (opcional y solo para el modo Avanzado).
+- *debug*: true o false (opcional).
 #### checkVotaciones
 _Comprueba las votaciones cada X tiempo. Definido anteriormente. (checkTime)_
+#### checkVotacionManual
+_Comprueba las votaciones al momento de llamar al metodo._
 
 ## Licencia
 Este proyecto está licenciado bajo la Licencia LGPL-3.0-only. Ver el archivo [LICENSE](https://github.com/Papela/discord-vote/blob/main/LICENSE) para más detalles.

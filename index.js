@@ -1,5 +1,4 @@
 //TODO Modo debug? Que muestre mas logs?
-// Color amarillo al tener empate?
 //TODO Modo 0: Actualizar y ver el empate
 //Preparar tiempo = 0 y que sea INTEGER automaticamente.
 //Comprobar que el fichero sea json
@@ -13,6 +12,7 @@ class DiscordVote {
     this.mode = options.mode || 0;
     this.savePath = options.savePath || "./discord-vote.json";
     this.checkTime = options.checkTime || 60000;
+    this.debug = options.debug || false;
   }
 
   async checkVotaciones() {
@@ -22,10 +22,9 @@ class DiscordVote {
     }, intervalTime);
   }
 
-  async createVote(message, title, duration) {
+  async createVote(message, title, duration, savePath = this.savePath, debug = this.debug) { //TODO Probar
     if (this.mode == 0) {
     const filter = (interaction) => interaction.customId === 'dvote-yes' || interaction.customId === 'dvote-no';
-
     const row = new ActionRowBuilder()
       .addComponents(
         new ButtonBuilder()
@@ -60,12 +59,18 @@ class DiscordVote {
             content: "Tu voto no ha cambiado!",
             ephemeral: true
           });
+          if(debug)
+            console.debug("Ningun Voto eliminado por: " + interaction.user.username);
         } else {
           votesByUser.delete(interaction.user.id);
           if (previousVote === 'dvote-yes') {
             results.yes--;
+            if(debug)
+            console.debug("Voto 'yes' eliminado (posiblemente cambiado) por: " + interaction.user.username);
           } else if (previousVote === 'dvote-no') {
             results.no--;
+            if(debug)
+            console.debug("Voto 'no' eliminado (posiblemente cambiado) por: " + interaction.user.username);
           }
         }
       }
@@ -77,6 +82,8 @@ class DiscordVote {
         });
         votesByUser.set(interaction.user.id, 'dvote-yes');
         results.yes++;
+        if(debug)
+            console.debug("Voto 'yes' añadido por: " + interaction.user.username);
       } else if (interaction.customId === 'dvote-no') {
         interaction.reply({
           content: "Has votado correctamente!",
@@ -84,6 +91,8 @@ class DiscordVote {
         });
         votesByUser.set(interaction.user.id, 'dvote-no');
         results.no++;
+        if(debug)
+            console.debug("Voto 'no' añadido por: " + interaction.user.username);
       }
     });
 
@@ -93,6 +102,8 @@ class DiscordVote {
         color = 5763719
       }else if(results.yes < results.no){
         color = 15548997
+      }else{
+        color = 16776960
       }
       const VotacionResultados = new EmbedBuilder()
               .setTitle(title)
@@ -119,7 +130,8 @@ class DiscordVote {
         }
       });
     }
-
+        if(debug)
+        console.debug("Duraccion: " + duration + " y titulo: " + title);
       if (!duration || !title || (duration <0 || duration > 4320)) {
         return console.log("Datos no validos!");
       }else{
@@ -144,11 +156,14 @@ class DiscordVote {
         fechaInicio: startTime.toISOString(), // Guardar la fecha y hora de inicio en formato ISO
         fechaFin: endTime.toISOString() // Guardar la fecha y hora de finalización en formato ISO
       };
+      if(debug)
+       console.debug("Votaccion: " + votaciones[message.id]);
           fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
           if (err) {
             console.error(err);
           } else {
-            //console.log('Votacion iniciada!');
+            if(debug)
+            console.debug("Votacion iniciada!");
           }
         });
           
@@ -156,18 +171,15 @@ class DiscordVote {
         message.react("❌");
         });
       }
-      if (this.savePath) {
-        //this.checkVotaciones(message, this.savePath)
-        //setInterval(this.checkVotaciones(message, this.savePath), 60000);
-      }
   }else{
-    console.error("Modo no valido. Utiliza 0 (Sencillo) o 1 (Avanzado)");
+    console.error("Modo no de uso no valido! Utiliza 0 (Normal) o 1 (Avanzado)");
   }
   }
 
 
   checkVotacionManual(client = this.client) {
-    //console.log("Checkeando Votaciones...");
+      if(debug)
+        console.debug("Comprobando votaciones...");
     if (!fs.existsSync(this.savePath)) {
       console.warn('El fichero de guardado no exite. Creando...');
       fs.writeFile(this.savePath, '{}', err => {
@@ -191,9 +203,12 @@ class DiscordVote {
       
       // Recorrer todas las votaciones almacenadas
       for (const idMensaje in votaciones) {
+        console.debug("Comprobando (ID del Mensaje): " + votaciones[idMensaje]);
         const votacion = votaciones[idMensaje];
         const endTime = new Date(votacion.fechaFin); // Obtener la fecha y hora de finalización de la votación
         //console.log("Hora actual: " + currentTime.getHours() +":" + currentTime.getMinutes() + ", endTime: " + endTime.getHours() +":" + endTime.getMinutes());
+        if(debug)
+            console.debug("Hora actual: " + currentTime.getHours() +":" + currentTime.getMinutes() + ", Fecha Fin: " + endTime.getHours() +":" + endTime.getMinutes());
         // Comprobar si la hora actual es igual a la hora de finalización de la votaciónvotaciones:
         if ((currentTime.getFullYear() >= endTime.getFullYear() &&
             currentTime.getMonth() >= endTime.getMonth() &&
@@ -203,28 +218,42 @@ class DiscordVote {
             currentTime.getMinutes() >= endTime.getMinutes()))) {
           const messageId = votacion.idMensaje; // Obtener el ID del mensaje de votación
           let server = client.guilds.cache.get(votacion.idServer);
-          let channel = server.channels.cache.get(votacion.idCanal); // Obtener el canal correspondiente
-          if (!channel) {
-            console.error(`No se ha encontrado el canal con ID ${votacion.idCanal}`);
+          if(!server){
+            console.warn(`No se ha encontrado el servidor con el ID: ${votacion.idServer}`);
             delete votaciones[idMensaje];
             fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
                 if (err) {
-                  console.error(err);
+                  return console.error("Error: " + err);
                 } else {
-                  //console.log('Votacion Finalizada.');
+                  if(debug)
+                  return console.debug("No se ha encontrado el servidor. Votacion Finalizada!");
+                }
+              });
+          }
+          let channel = server.channels.cache.get(votacion.idCanal); // Obtener el canal correspondiente
+          if (!channel) {
+            console.warn(`No se ha encontrado el canal con ID ${votacion.idCanal}`);
+            delete votaciones[idMensaje];
+            fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
+                if (err) {
+                  return console.error("Error: " + err);
+                } else {
+                  if(debug)
+                  return console.debug("No se ha encontrado el canal. Votacion Finalizada!");
                 }
               });
           }
           // Obtener el mensaje de votación utilizando el ID del mensaje
           let mensajeVotacion = channel.messages.fetch(messageId);
           if(!mensajeVotacion){
-            console.error(`No se ha encontrado el mensaje con ID ${votacion.idCanal}`);
+            console.warn(`No se ha encontrado el mensaje con ID ${votacion.idCanal}`);
             delete votaciones[idMensaje];
             fs.writeFile(ruta, JSON.stringify(votaciones, null, 2), err => {
                 if (err) {
-                  console.error(err);
+                  console.error("Error: " + err);
                 } else {
-                  //console.log('Votacion Finalizada.');
+                  if(debug)
+                  return console.debug("No se ha encontrado el mensaje. Votacion Finalizada!");
                 }
               });
           }
@@ -246,14 +275,17 @@ class DiscordVote {
               
               const upvotes = reactions.get("✅").count - 1; // Restar 1 para excluir la reacción del bot
               const downvotes = reactions.get("❌").count - 1; // Restar 1 para excluir la reacción del bot
-              
-              message.reactions.removeAll().catch(error => console.error('Failed to clear reactions:', error));
+              if(debug)
+                console.debug("Resultados finales (despues de eliminar las no validas, las repetidas): ✅=" + upvotes + " ❌=" + downvotes);
+              message.reactions.removeAll().catch(error => console.error('Error al eliminar las reacciones. Error:', error));
 
               let color = 8463563;
             if(upvotes > downvotes){
               color = 5763719
             }else if(upvotes < downvotes){
               color = 15548997
+            }else{
+              color = 16776960
             }
             
               // Editar el mensaje de votación con los resultados
@@ -265,13 +297,15 @@ class DiscordVote {
                 await message.edit({ embeds: [VotacionResultados] });                                                         
               // Eliminar el registro de la votación del archivo de votaciones
               delete votaciones[idMensaje];
-  
+                if(debug)
+                  console.debug(" Votacion eliminado del registro.");
               // Guardar los cambios en el archivo de votaciones
               fs.writeFile(ruta, JSON.stringify(votaciones, null , 2), err => {
                 if (err) {
-                  console.error(err);
+                  console.error("Error:" + err);
                 } else {
-                  //console.log('Votacion Finalizada.');
+                  if(debug)
+                  return console.debug("Votacion Finalizada Correctamente.");
                 }
               });
             })
