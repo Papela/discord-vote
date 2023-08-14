@@ -21,9 +21,6 @@
     "discord-bot",
     "vote"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "author": "Papela",
   "license": "LGPL-3.0-only",
   "homepage": "https://github.com/Papela/discord-vote#readme",
