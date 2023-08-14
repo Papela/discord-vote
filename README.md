@@ -81,7 +81,7 @@ _Comprueba las votaciones cada X tiempo. Definido anteriormente. (checkTime)_
 _Comprueba las votaciones al momento de llamar al metodo._
 
 ## Licencia
-Este proyecto está licenciado bajo la Licencia LGPL-3.0-only. Ver el archivo [LICENSE](https://github.com/Papela/discord-vote/blob/main/LICENSE) para más detalles.
+Este proyecto está licenciado bajo la Licencia GPL-3.0. Ver el archivo [LICENSE](https://github.com/Papela/discord-vote/blob/main/LICENSE) para más detalles.
 
 ## Autor
 + [@Papela](https://github.com/Papela)

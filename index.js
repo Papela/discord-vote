@@ -1,6 +1,6 @@
 //USAR RAMAS PARA FUTURAS UPDATES!!
-//Comprobar que el fichero sea json
 //TODO Probar que los nuevos cambios y todo funcione.
+//Añadir opciones de idiomas?
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const fs = require("fs");
 
@@ -48,25 +48,26 @@ class DiscordVote {
       );
 
       let Votacion = null;
+      let autorUsername = message.author.username;
       if(duration != 0){
       Votacion = new EmbedBuilder()
           .setTitle(title)
-          .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
+          .setFooter({ text: `Votacion iniciada por ` + autorUsername})
           .setColor(8463563)
           .setTimestamp();
       }else{
         Votacion = new EmbedBuilder()
         .setTitle(title)
         .setColor(8463563)
-        .setFooter(`Votacion sin tiempo definido iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`)
+        .setFooter({ text: `Votacion iniciada por ` + autorUsername + `! Los resultados seran la cantidad de reacciones en el momento deseado.`})
         .setTimestamp();
       }
        const voteMessage = await message.channel.send({ embeds: [Votacion], components: [row] })
-
+      let collector = null;
        if(duration != 0){
-        const collector = voteMessage.createMessageComponentCollector({ filter, time: duration * 60 * 1000 });
+        collector = voteMessage.createMessageComponentCollector({ filter, time: duration * 60 * 1000 });
        }else{
-        const collector = voteMessage.createMessageComponentCollector({ filter, time: null });
+        collector = voteMessage.createMessageComponentCollector({ filter, time: null });
        }
 
     const votesByUser = new Map();
@@ -119,13 +120,21 @@ class DiscordVote {
             console.debug("Voto 'no' añadido por: " + interaction.user.username);
       }
       if(duration == 0){
+        let color = 8463563;
+          if(results.yes > results.no){
+            color = 5763719
+          }else if(results.yes < results.no){
+            color = 15548997
+          }else{
+            color = 16776960
+          }
         const VotacionResultados = new EmbedBuilder()
               .setTitle(title)
               .setDescription(`Resultados actuales de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos`)
               .setColor(color)
-              .setFooter(`Votacion sin tiempo definido iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`)
+              //.setFooter(`Votacion sin tiempo definido iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`)
               .setTimestamp();
-              voteMessage.edit({ embeds: [VotacionResultados], components: [] });
+              voteMessage.edit({ embeds: [VotacionResultados] });
       }
     });
 
@@ -169,16 +178,17 @@ class DiscordVote {
         const endTime = new Date(startTime.getTime() + duration * 60000); // Calcula la fecha y hora de finalización de la votación
         let channelId = message.channel.id;
         let Votacion = null;
+        let autorUsername = message.author.username;
         if(duration == 0){
           Votacion = new EmbedBuilder()
             .setTitle(title)
             .setColor(8463563)
-            .setFooter(`Votacion sin tiempo definido iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`)
+            .setFooter({ text: `Votacion iniciada por ` + autorUsername + `! Los resultados seran la cantidad de reacciones en el momento deseado.`})
             .setTimestamp(endTime);
         }else{
           Votacion = new EmbedBuilder()
             .setTitle(title)
-            .setFooter(`Votación iniciada por ${message.author.username}`)
+            .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
             .setColor(8463563)
             .setTimestamp(endTime);
         }
@@ -197,7 +207,7 @@ class DiscordVote {
               fechaFin: endTime.toISOString() // Guardar la fecha y hora de finalización en formato ISO
             };
       if(debug)
-       console.debug("Votaccion: " + votaciones[message.id]);
+       console.debug("Votacion: " + String(votaciones[message.id]));
           fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
           if (err) {
             console.error(err);
@@ -221,7 +231,7 @@ class DiscordVote {
   }
 
 
-  checkVotacionManual(client = this.client) {
+  checkVotacionManual(client = this.client, debug = this.debug) {
       if(debug)
         console.debug("Comprobando votaciones...");
     if (!fs.existsSync(this.savePath)) {
@@ -247,7 +257,8 @@ class DiscordVote {
       
       // Recorrer todas las votaciones almacenadas
       for (const idMensaje in votaciones) {
-        console.debug("Comprobando (ID del Mensaje): " + votaciones[idMensaje]);
+        if(debug)
+        console.debug("Comprobando (ID del Mensaje): " + String(votaciones[idMensaje]));
         const votacion = votaciones[idMensaje];
         const endTime = new Date(votacion.fechaFin); // Obtener la fecha y hora de finalización de la votación
         //console.log("Hora actual: " + currentTime.getHours() +":" + currentTime.getMinutes() + ", endTime: " + endTime.getHours() +":" + endTime.getMinutes());
