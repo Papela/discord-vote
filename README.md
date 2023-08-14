@@ -59,12 +59,12 @@ client.on('messageCreate', async (message) => {
         }
       }
 
-client.login("TOKEN DEL BOT";
+client.login("TOKEN DEL BOT");
 ```
 
 ## Funciones
 ```javascript
-+ createVote(message, title, duration, savePath, debug);
++ createVote(message, duration, title, savePath, debug);
 + checkVotaciones();
 + checkVotacionManual();
 ```
