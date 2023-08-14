@@ -1,7 +1,6 @@
-//TODO Modo debug? Que muestre mas logs?
-//TODO Modo 0: Actualizar y ver el empate
-//Preparar tiempo = 0 y que sea INTEGER automaticamente.
+//USAR RAMAS PARA FUTURAS UPDATES!!
 //Comprobar que el fichero sea json
+//TODO Probar que los nuevos cambios y todo funcione.
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const fs = require("fs");
 
@@ -22,8 +21,19 @@ class DiscordVote {
     }, intervalTime);
   }
 
-  async createVote(message, title, duration, savePath = this.savePath, debug = this.debug) { //TODO Probar
+  async createVote(message, title, duration, savePath = this.savePath, debug = this.debug) { //TODO Probar. Comprobar cambios con los commit.
+    if (!duration || isNaN(duration))
+      duration = 0;
+    
+    if(!title)
+      return console.error("Error. Titulo no valido!");
+    
+    if(!this.savePath.includes(".json"))
+      return console.error("Error. Ruta de guardado no valido! Ejemplo de ruta valida: `./votaciones.json`");
+
     if (this.mode == 0) {
+      if(duration == 0)
+        console.warn(`Estas usando el modo "Normal" con un tiempo de 0. Esto es poco recomendable, si el bot deja de funcionar, las votaciones anteriores, dejaran de funcionar!`);
     const filter = (interaction) => interaction.customId === 'dvote-yes' || interaction.customId === 'dvote-no';
     const row = new ActionRowBuilder()
       .addComponents(
@@ -37,14 +47,27 @@ class DiscordVote {
           .setStyle(ButtonStyle.Danger)
       );
 
-      const Votacion = new EmbedBuilder()
+      let Votacion = null;
+      if(duration != 0){
+      Votacion = new EmbedBuilder()
           .setTitle(title)
           .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
           .setColor(8463563)
           .setTimestamp();
+      }else{
+        Votacion = new EmbedBuilder()
+        .setTitle(title)
+        .setColor(8463563)
+        .setFooter(`Votacion sin tiempo definido iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`)
+        .setTimestamp();
+      }
        const voteMessage = await message.channel.send({ embeds: [Votacion], components: [row] })
 
-    const collector = voteMessage.createMessageComponentCollector({ filter, time: duration * 60 * 1000 });
+       if(duration != 0){
+        const collector = voteMessage.createMessageComponentCollector({ filter, time: duration * 60 * 1000 });
+       }else{
+        const collector = voteMessage.createMessageComponentCollector({ filter, time: null });
+       }
 
     const votesByUser = new Map();
     const results = {
@@ -55,12 +78,13 @@ class DiscordVote {
       const previousVote = votesByUser.get(interaction.user.id);
       if (previousVote) {
         if (previousVote === interaction.customId) {
+          if(debug)
+            console.debug("Ningun Voto eliminado por: " + interaction.user.username);
           return interaction.reply({
             content: "Tu voto no ha cambiado!",
             ephemeral: true
           });
-          if(debug)
-            console.debug("Ningun Voto eliminado por: " + interaction.user.username);
+          
         } else {
           votesByUser.delete(interaction.user.id);
           if (previousVote === 'dvote-yes') {
@@ -94,6 +118,15 @@ class DiscordVote {
         if(debug)
             console.debug("Voto 'no' añadido por: " + interaction.user.username);
       }
+      if(duration == 0){
+        const VotacionResultados = new EmbedBuilder()
+              .setTitle(title)
+              .setDescription(`Resultados actuales de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos`)
+              .setColor(color)
+              .setFooter(`Votacion sin tiempo definido iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`)
+              .setTimestamp();
+              voteMessage.edit({ embeds: [VotacionResultados], components: [] });
+      }
     });
 
     collector.on('end', () => {
@@ -116,9 +149,6 @@ class DiscordVote {
     if ((!this.savePath) || (this.savePath == null) || (!this.savePath.includes(".json"))) {
       return console.error("Ruta no valida!");
     }
-    if (isNaN(duration)) {
-      duration = 1; //Tendra que ser 0 Minutos
-    }
 
     if (!fs.existsSync(this.savePath)) {
       console.warn('El fichero de guardado no exite. Creando...');
@@ -132,30 +162,40 @@ class DiscordVote {
     }
         if(debug)
         console.debug("Duraccion: " + duration + " y titulo: " + title);
-      if (!duration || !title || (duration <0 || duration > 4320)) {
+      if (!duration || !title || (duration < 0)) {
         return console.log("Datos no validos!");
       }else{
         const startTime = new Date(); // Guarda la fecha y hora de inicio de la votación
         const endTime = new Date(startTime.getTime() + duration * 60000); // Calcula la fecha y hora de finalización de la votación
         let channelId = message.channel.id;
-        
-        const Votacion = new EmbedBuilder()
-          .setTitle(title)
-          .setFooter({ text: `Votación iniciada por ${message.author.username}`})
-          .setColor(8463563)
-          .setTimestamp(endTime);
+        let Votacion = null;
+        if(duration == 0){
+          Votacion = new EmbedBuilder()
+            .setTitle(title)
+            .setColor(8463563)
+            .setFooter(`Votacion sin tiempo definido iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`)
+            .setTimestamp(endTime);
+        }else{
+          Votacion = new EmbedBuilder()
+            .setTitle(title)
+            .setFooter(`Votación iniciada por ${message.author.username}`)
+            .setColor(8463563)
+            .setTimestamp(endTime);
+        }
+
           message.channel.send({ embeds: [Votacion] }).then(message => {
             const votacionData = fs.readFileSync(this.savePath, 'utf8');
             let votaciones = JSON.parse(votacionData);
-      votaciones[message.id] = {
-        nombreServer: message.guild.name, // Guardar el nombre del servidor
-        idMensaje: message.id, // Guardar el ID del mensaje de votación
-        idServer: message.guild.id,
-        idCanal: channelId, //Guardar el ID del canal de votacion
-        titulo: title,
-        fechaInicio: startTime.toISOString(), // Guardar la fecha y hora de inicio en formato ISO
-        fechaFin: endTime.toISOString() // Guardar la fecha y hora de finalización en formato ISO
-      };
+      if(duration != 0){
+            votaciones[message.id] = {
+              nombreServer: message.guild.name, // Guardar el nombre del servidor
+              idMensaje: message.id, // Guardar el ID del mensaje de votación
+              idServer: message.guild.id,
+              idCanal: channelId, //Guardar el ID del canal de votacion
+              titulo: title,
+              fechaInicio: startTime.toISOString(), // Guardar la fecha y hora de inicio en formato ISO
+              fechaFin: endTime.toISOString() // Guardar la fecha y hora de finalización en formato ISO
+            };
       if(debug)
        console.debug("Votaccion: " + votaciones[message.id]);
           fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
@@ -166,6 +206,10 @@ class DiscordVote {
             console.debug("Votacion iniciada!");
           }
         });
+      }else{
+        if(debug)
+            console.debug("Votacion iniciada!");
+      }
           
         message.react("✅");
         message.react("❌");
