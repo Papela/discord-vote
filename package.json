@@ -1,6 +1,6 @@
 {
   "name": "discord-vote",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Paquete para crear un sistema de votaciones simple y sencillo para discord.js 14",
   "main": "index.js",
   "scripts": {

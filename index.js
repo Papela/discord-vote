@@ -22,7 +22,7 @@ class DiscordVote {
     }, intervalTime);
   }
 
-  async createVote(message, title, duration, savePath = this.savePath, debug = this.debug) { //TODO Probar. Comprobar cambios con los commit.
+  async createVote(message, title, duration, savePath = this.savePath, debug = this.debug) {
     if (!duration || isNaN(duration))
       duration = 0;
     
@@ -52,6 +52,7 @@ class DiscordVote {
       if(duration != 0){
       Votacion = new EmbedBuilder()
           .setTitle(title)
+          //.setDescription(`La votación termina: <t:${new Date(startTime.getTime() + duration * 60000)}:f>\nTiempo restante: <t:${new Date(startTime.getTime() + duration * 60000)}:R>`)
           .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
           .setColor(8463563)
           .setTimestamp();
@@ -173,12 +174,12 @@ class DiscordVote {
     }
 
     if (!fs.existsSync(this.savePath)) {
-      console.warn('El fichero de guardado no exite. Creando...');
+      console.warn('El fichero de guardado no exite. Creando fichero...');
       fs.writeFile(this.savePath, '{}', err => {
         if (err) {
           console.error("El fichero no se ha creado debido a un error. Error: " + err);
         }else{
-          console.warn('Fichero de guardado creado.');
+          console.warn('Fichero de guardado creado correctamente.');
         }
       });
     }
@@ -195,11 +196,11 @@ class DiscordVote {
           Votacion = new EmbedBuilder()
             .setTitle(title)
             .setColor(8463563)
-            .setFooter({ text: `Votacion iniciada por ${message.author.username}!`})
-            .setTimestamp(endTime);
+            .setFooter({ text: `Votacion iniciada por ${message.author.username}!`});
         }else{
           Votacion = new EmbedBuilder()
             .setTitle(title)
+            .setDescription(`La votación termina: <t:${endTime.getTime()}:f>\nTiempo restante: <t:${endTime}:R>`) //Sin Probar
             .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
             .setColor(8463563)
             .setTimestamp(endTime);
