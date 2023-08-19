@@ -1,5 +1,5 @@
 //USAR RAMAS PARA LAS UPDATES!!
-//Añadir opciones de idiomas?
+//Añadir opciones de idiomas y cambiar la definicion de cliente y mensaje para la 1.1.x
 //FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 /*Posible forma para modo 0:
 message.channel.client.on('messageDelete', (deletedMessage) => {
