@@ -401,6 +401,7 @@ class DiscordVote {
         if(this.debug)
         console.debug("Actualizando votacion con tiempo a 0");
 
+      const startTime = new Date(votacion.fechaInicio);
       const messageId = votacion.idMensaje; // Obtener el ID del mensaje de votación
         let server = client.guilds.cache.get(votacion.idServer);
         if(!server){
@@ -474,7 +475,7 @@ class DiscordVote {
             // Editar el mensaje de votación con los resultados
             const VotacionResultados = new EmbedBuilder()
               .setTitle(votacion.titulo)
-              .setDescription(`Resultados actuales de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\nEsta votacion todavía no ha finalizado!`)
+              .setDescription(`Resultados actuales de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\nEsta votacion todavía no ha finalizado!\nLa votación emepezo el <t:${Math.floor(startTime.getTime() / 1000)}:f>`)
               .setColor(color)
               .setTimestamp();
               await message.edit({ embeds: [VotacionResultados] });
