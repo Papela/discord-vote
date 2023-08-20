@@ -5,6 +5,18 @@
 
 Un paquete NPM para poder tener un sistema de votaciones para Discord.js 14 de manera sencilla.
 
+## Imágenes de ejemplo
+> Notas: _Puede que algunos ejemplos ya no se vean exactamente así debido a nuevas actualizaciones._
+#### Modo normal
+<img src="https://i.ibb.co/CMSN2Pj/image.png" />&nbsp; &nbsp;<img src="https://i.ibb.co/8sRXFcq/image.png" />
+
+<img src="https://i.ibb.co/BCGCFhx/image.png" />
+
+#### Modo Avanzado
+<img src="https://i.ibb.co/54xJY5n/image.png" />&nbsp; &nbsp;<img src="https://i.ibb.co/StQF81G/image.png" />
+
+<img src="https://i.ibb.co/T8B3nhs/image.png" />
+
 ## Instalación
 
 Para instalar el paquete, utiliza el siguiente comando:
