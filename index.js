@@ -1,5 +1,6 @@
 //USAR RAMAS PARA LAS UPDATES!!
-//Añadir opciones de idiomas y cambiar la definicion de cliente y mensaje para la 1.1.x
+//TODO Comprobar el ${} en los idiomas y terminar/añadir idiomas
+// Añadir personalizacion con los idiomas, ej botones, footer...
 //FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 /*Posible forma para modo 0:
 message.channel.client.on('messageDelete', (deletedMessage) => {
@@ -19,6 +20,7 @@ class DiscordVote {
     this.savePath = options.savePath || "./discord-vote.json";
     this.checkTime = options.checkTime || 60000;
     this.debug = options.debug || false;
+    this.lang = options.lang || 'es';
   }
 
   async checkVotaciones() {
@@ -28,7 +30,7 @@ class DiscordVote {
     }, intervalTime);
   }
 
-  async createVote(message, title, duration, savePath = this.savePath, debug = this.debug) {
+  async createVote(message, title, duration, savePath = this.savePath, debug = this.debug, lang = this.lang) {
     if (!duration || isNaN(duration))
       duration = 0;
     
@@ -89,7 +91,7 @@ class DiscordVote {
       if (previousVote) {
         if (previousVote === interaction.customId) {
           if(debug)
-            console.debug("Ningun Voto eliminado por: " + interaction.user.username);
+            console.debug(`Ningun Voto eliminado por: ${interaction.user.username}`);
           return interaction.reply({
             content: "Tu voto no ha cambiado!",
             ephemeral: true
@@ -192,6 +194,7 @@ class DiscordVote {
       });
     }
         if(debug)
+        //Ejemplo variables: console.debug(translations.greeting.replace("${duration}", duration).replace("${title}", title));
         console.debug("Duraccion: " + duration + " y titulo: " + title);
       if (!duration || !title || (duration < 0)) {
         return console.log("Datos no validos!");
@@ -239,7 +242,8 @@ class DiscordVote {
           }
         }
       if(debug)
-       console.debug("Votacion: " + JSON.stringify(votaciones[message.id]));
+       var votacionJson = JSON.stringify(votaciones[message.id]);
+       console.debug("Votacion: " + votacionJson);
           fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
           if (err) {
             console.error(err);
@@ -284,8 +288,10 @@ class DiscordVote {
       
       // Recorrer todas las votaciones almacenadas
       for (const idMensaje in votaciones) {
-        if(debug)
+        if(debug){
+          let idvotacion = votaciones[idMensaje].idMensaje;
         console.debug("Comprobando (ID del Mensaje): " + votaciones[idMensaje].idMensaje);
+        }
         const votacion = votaciones[idMensaje];
         const endTime = new Date(votacion.fechaFin); // Obtener la fecha y hora de finalización de la votación
         //console.log("Hora actual: " + currentTime.getHours() +":" + currentTime.getMinutes() + ", endTime: " + endTime.getHours() +":" + endTime.getMinutes());
@@ -381,7 +387,7 @@ class DiscordVote {
               // Eliminar el registro de la votación del archivo de votaciones
               delete votaciones[idMensaje];
                 if(debug)
-                  console.debug(" Votacion eliminado del registro.");
+                  console.debug("Votacion eliminado del registro.");
               // Guardar los cambios en el archivo de votaciones
               fs.writeFile(ruta, JSON.stringify(votaciones, null , 2), err => {
                 if (err) {
