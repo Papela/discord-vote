@@ -1,7 +1,13 @@
 //USAR RAMAS PARA LAS UPDATES!!
-//TODO Añadir el tiempo restante a las votaciones?
+//Añadir opciones de idiomas y cambiar la definicion de cliente y mensaje para la 1.1.x
 //FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
-//Añadir opciones de idiomas?
+/*Posible forma para modo 0:
+message.channel.client.on('messageDelete', (deletedMessage) => {
+  if (deletedMessage.id === voteMessage.id) {
+    collector.stop(); // Detener el colector si se elimina el mensaje de la votación
+  }
+});*/
+
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const fs = require("fs");
 
@@ -22,7 +28,7 @@ class DiscordVote {
     }, intervalTime);
   }
 
-  async createVote(message, title, duration, savePath = this.savePath, debug = this.debug) { //TODO Probar. Comprobar cambios con los commit.
+  async createVote(message, title, duration, savePath = this.savePath, debug = this.debug) {
     if (!duration || isNaN(duration))
       duration = 0;
     
@@ -50,8 +56,11 @@ class DiscordVote {
 
       let Votacion = null;
       if(duration != 0){
+        const startTime = new Date(); // Guarda la fecha y hora de inicio de la votación
+        const endTime = new Date(startTime.getTime() + duration * 60000); // Calcula la fecha y hora de finalización de la votación
       Votacion = new EmbedBuilder()
           .setTitle(title)
+          .setDescription(`Tiempo restante: <t:${Math.floor(endTime.getTime() / 1000)}:R>`)
           .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
           .setColor(8463563)
           .setTimestamp();
@@ -173,12 +182,12 @@ class DiscordVote {
     }
 
     if (!fs.existsSync(this.savePath)) {
-      console.warn('El fichero de guardado no exite. Creando...');
+      console.warn('El fichero de guardado no exite. Creando fichero...');
       fs.writeFile(this.savePath, '{}', err => {
         if (err) {
           console.error("El fichero no se ha creado debido a un error. Error: " + err);
         }else{
-          console.warn('Fichero de guardado creado.');
+          console.warn('Fichero de guardado creado correctamente.');
         }
       });
     }
@@ -195,11 +204,11 @@ class DiscordVote {
           Votacion = new EmbedBuilder()
             .setTitle(title)
             .setColor(8463563)
-            .setFooter({ text: `Votacion iniciada por ${message.author.username}!`})
-            .setTimestamp(endTime);
+            .setFooter({ text: `Votacion iniciada por ${message.author.username}!`});
         }else{
           Votacion = new EmbedBuilder()
             .setTitle(title)
+            .setDescription(`Tiempo restante: <t:${Math.floor(endTime.getTime() / 1000)}:R> aproximadamente`)
             .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
             .setColor(8463563)
             .setTimestamp(endTime);
@@ -330,7 +339,7 @@ class DiscordVote {
                   return console.debug("No se ha encontrado el mensaje. Votacion Finalizada!");
                 }
               });
-          }
+          }else{
           
           channel.messages.fetch(messageId).then(async message => {
             // Obtener la cantidad de reacciones de cada tipo
@@ -365,7 +374,7 @@ class DiscordVote {
               // Editar el mensaje de votación con los resultados
               const VotacionResultados = new EmbedBuilder()
                 .setTitle(votacion.titulo)
-                .setDescription(`Resultados de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos`)
+                .setDescription(`Resultados de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\n La votación finalizo el: <t:${Math.floor(endTime.getTime() / 1000)}:f>`)
                 .setColor(color)
                 .setTimestamp();
                 await message.edit({ embeds: [VotacionResultados] });                                                         
@@ -383,13 +392,16 @@ class DiscordVote {
                 }
               });
             })
+        
             .catch(console.error);
+        }
         }
       }else{
           //CON TIEMPO A 0
         if(this.debug)
         console.debug("Actualizando votacion con tiempo a 0");
 
+      const startTime = new Date(votacion.fechaInicio);
       const messageId = votacion.idMensaje; // Obtener el ID del mensaje de votación
         let server = client.guilds.cache.get(votacion.idServer);
         if(!server){
@@ -463,7 +475,7 @@ class DiscordVote {
             // Editar el mensaje de votación con los resultados
             const VotacionResultados = new EmbedBuilder()
               .setTitle(votacion.titulo)
-              .setDescription(`Resultados actuales de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\nEsta votacion todavía no ha finalizado!`)
+              .setDescription(`Resultados actuales de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\nEsta votacion todavía no ha finalizado!\nLa votación emepezo el <t:${Math.floor(startTime.getTime() / 1000)}:f>`)
               .setColor(color)
               .setTimestamp();
               await message.edit({ embeds: [VotacionResultados] });

@@ -46,6 +46,7 @@ jspm_packages/
 package-lock.json
 Pruebas/
 Versiones/
+apuntes.txt
 
 
 # Snowpack dependency directory (https://snowpack.dev/)
@@ -134,5 +135,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-.npmrc
-original.npmrc
