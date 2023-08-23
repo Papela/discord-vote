@@ -26,5 +26,23 @@
         "voteRemoved": "Votacion eliminado del registro.",
         "voteEnded": "Votacion Finalizada Correctamente.",
         "updateMsgWithoutTime": "Actualizando votacion con tiempo a 0"
+    },
+    "MODE-NORMAL":{
+        "btnYes": "Yes",
+        "btnNo": "No",
+        "description": "Tiempo restante: <t:${Math.floor(endTime.getTime() / 1000)}:R>",
+        "footer": "Votacion iniciada por ${message.author.username}",
+        "voteNoChange": "Tu voto no ha cambiado!",
+        "voteMsg": "Has votado correctamente!",
+        "descriptionWithoutTime": "Resultados actuales de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos\nEsta votacion todavía no ha finalizado!",
+        "descriptionEnded": "Resultados de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos"
+    },
+    "MODE-ADVANCED":{
+        "yesReaction": "✅",
+        "noReaction": "❌",
+        "footer": "Votacion iniciada por ${message.author.username}",
+        "description": "Tiempo restante: <t:${Math.floor(endTime.getTime() / 1000)}:R> (aproximadamente)",
+        "descriptionWithoutTime": "Resultados actuales de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\nEsta votacion todavía no ha finalizado!\nLa votación emepezo el <t:${Math.floor(startTime.getTime() / 1000)}:f>",
+        "descriptionEnded": "Resultados de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\n La votación finalizo el: <t:${Math.floor(endTime.getTime() / 1000)}:f>"
     }
 }
