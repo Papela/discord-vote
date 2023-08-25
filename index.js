@@ -41,6 +41,8 @@ class DiscordVote {
     if (this.mode == 0) {
       if(duration == 0)
         console.warn(`Estas usando el modo "Normal" con un tiempo de 0. Esto es poco recomendable ya que si el bot deja de funcionar, las votaciones anteriores, dejaran de funcionar!`);
+      if(duration >= 1440)
+        console.warn(`Estas usando el modo "Normal" con un tiempo mayor a 1 dia. Esto es poco recomendable ya que si el bot deja de funcionar, las votaciones anteriores, dejaran de funcionar!`);
     const filter = (interaction) => interaction.customId === 'dvote-yes' || interaction.customId === 'dvote-no';
     const row = new ActionRowBuilder()
       .addComponents(
