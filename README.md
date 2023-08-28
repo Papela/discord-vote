@@ -55,7 +55,7 @@ const votacion = new DiscordVote({
   client:client, //El cliente
   mode:1, //Modo de votacion. (0 = Normal, 1 = Avanzado)
   savePath: './votaciones.json', //Ruta de guardado (Avanzado)
-  checkTime: 10000}); //tiempo de comprobacion (Avanzado)
+  checkTime: 60000}); //tiempo de comprobacion (Avanzado)
 //*Todo lo del modo avanzado es completamente opcional.*/
 votacion.checkVotaciones(); //Utilizado para llamar a la funcion que comprueba las votaciones usando checkTime (por defeto 1 Minuto). *Necesario al usar el modo avanzado
 
