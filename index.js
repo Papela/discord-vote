@@ -1,6 +1,4 @@
 //USAR RAMAS PARA LAS UPDATES!!
-//TODO Comprobar el ${} en los idiomas y terminar/añadir idiomas
-// Añadir personalizacion con los idiomas, ej botones, footer...
 //FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 /*Posible forma para modo 0:
 message.channel.client.on('messageDelete', (deletedMessage) => {
@@ -55,11 +53,11 @@ class DiscordVote {
       .addComponents(
         new ButtonBuilder()
           .setCustomId('dvote-yes')
-          .setLabel('Yes')
+          .setLabel(modeNormal['btnYes'])
           .setStyle(ButtonStyle.Success),
         new ButtonBuilder()
           .setCustomId('dvote-no')
-          .setLabel('No')
+          .setLabel(modeNormal['btnNo'])
           .setStyle(ButtonStyle.Danger)
       );
 
@@ -69,15 +67,15 @@ class DiscordVote {
         const endTime = new Date(startTime.getTime() + duration * 60000); // Calcula la fecha y hora de finalización de la votación
       Votacion = new EmbedBuilder()
           .setTitle(title)
-          .setDescription(`Tiempo restante: <t:${Math.floor(endTime.getTime() / 1000)}:R>`)
-          .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
+          .setDescription(modeNormal['description'].replace('${Math.floor(endTime.getTime() / 1000)}', Math.floor(endTime.getTime() / 1000)))
+          .setFooter({ text: modeNormal['footer'].replace('${message.author.username}', message.author.username)})
           .setColor(8463563)
           .setTimestamp();
       }else{
         Votacion = new EmbedBuilder()
         .setTitle(title)
         .setColor(8463563)
-        .setFooter({ text: `Votacion iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.`})
+        .setFooter({ text: modeNormal['footerWithoutTime'].replace('${message.author.username}', message.author.username)})
         .setTimestamp();
       }
        const voteMessage = await message.channel.send({ embeds: [Votacion], components: [row] })
@@ -100,7 +98,7 @@ class DiscordVote {
           if(debug)
             console.debug(debugError['noVotesDeletes'].replace('${interaction.user.username}', interaction.user.username));
           return interaction.reply({
-            content: "Tu voto no ha cambiado!",
+            content: modeNormal['voteNoChange'],
             ephemeral: true
           });
           
@@ -120,7 +118,7 @@ class DiscordVote {
 
       if (interaction.customId === 'dvote-yes') {
         interaction.reply({
-          content: "Has votado correctamente!",
+          content: modeNormal['voteMsg'],
           ephemeral: true
         });
         votesByUser.set(interaction.user.id, 'dvote-yes');
@@ -129,7 +127,7 @@ class DiscordVote {
             console.debug(debugError['addVoteYes'].replace('${interaction.user.username}', interaction.user.username));
       } else if (interaction.customId === 'dvote-no') {
         interaction.reply({
-          content: "Has votado correctamente!",
+          content: modeNormal['voteMsg'],
           ephemeral: true
         });
         votesByUser.set(interaction.user.id, 'dvote-no');
@@ -150,7 +148,7 @@ class DiscordVote {
             if (fetchedMessage) {
               const VotacionResultados = new EmbedBuilder()
                 .setTitle(title)
-                .setDescription(`Resultados actuales de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos\nEsta votacion todavía no ha finalizado!`)
+                .setDescription(modeNormal['descriptionWithoutTime'].replace('${results.yes}',results.yes).replace('${results.no}',results.no))
                 .setColor(color)
                 .setTimestamp();
                 voteMessage.edit({ embeds: [VotacionResultados] });
@@ -175,7 +173,7 @@ class DiscordVote {
       if (fetchedMessage) {
         const VotacionResultados = new EmbedBuilder()
               .setTitle(title)
-              .setDescription(`Resultados de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos`)
+              .setDescription(modeNormal['descriptionEnded'].replace('${results.yes}',results.yes).replace('${results.no}',results.no))
               .setColor(color)
               .setTimestamp();
               voteMessage.edit({ embeds: [VotacionResultados], components: [] });
@@ -305,7 +303,7 @@ class DiscordVote {
         const votacion = votaciones[idMensaje];
         const endTime = new Date(votacion.fechaFin); // Obtener la fecha y hora de finalización de la votación
          if(debug)
-            console.debug(debugError['time'].replace('${currentTime.getHours()}', currentTime.getHours()).replace('${currentTime.getMinutes()}', currentTime.getMinutes()).replace('${endTime.getHours()}', endTime.getHours()).replace('${endTime.getMinutes()}', endTime.getMinutes()));
+            console.debug(debugError['compareTime'].replace('${currentTime.getHours()}', currentTime.getHours()).replace('${currentTime.getMinutes()}', currentTime.getMinutes()).replace('${endTime.getHours()}', endTime.getHours()).replace('${endTime.getMinutes()}', endTime.getMinutes()));
           if(votacion.fechaFin != null){
         // Comprobar si la hora actual es igual a la hora de finalización de la votaciónvotaciones:
         if ((currentTime.getFullYear() >= endTime.getFullYear() &&
@@ -433,7 +431,7 @@ class DiscordVote {
         }
         let channel = server.channels.cache.get(votacion.idCanal); // Obtener el canal correspondiente
         if (!channel) {
-          console.warn(debugError['channelNotFound'].replace('${votacion.idCanal}', votacion.idCanal));
+          console.warn(debugError['channelNotFound']);
           delete votaciones[idMensaje];
           fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
               if (err) {
