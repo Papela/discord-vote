@@ -1,4 +1,5 @@
 //USAR RAMAS PARA LAS UPDATES!!
+//FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
 //FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 /*Posible forma para modo 0:
 message.channel.client.on('messageDelete', (deletedMessage) => {
