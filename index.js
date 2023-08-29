@@ -306,7 +306,7 @@ class DiscordVote {
           if(!server){
             console.warn(`No se ha encontrado el servidor con el ID: ${votacion.idServer}`);
             delete votaciones[idMensaje];
-            fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
+            fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
                 if (err) {
                   return console.error("Error: " + err);
                 } else {
@@ -319,7 +319,7 @@ class DiscordVote {
           if (!channel) {
             console.warn(`No se ha encontrado el canal con ID ${votacion.idCanal}`);
             delete votaciones[idMensaje];
-            fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
+            fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
                 if (err) {
                   return console.error("Error: " + err);
                 } else {
@@ -409,7 +409,7 @@ class DiscordVote {
         if(!server){
           console.warn(`No se ha encontrado el servidor con el ID: ${votacion.idServer}`);
           delete votaciones[idMensaje];
-          fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
+          fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
               if (err) {
                 return console.error("Error: " + err);
               } else {
@@ -422,7 +422,7 @@ class DiscordVote {
         if (!channel) {
           console.warn(`No se ha encontrado el canal con ID ${votacion.idCanal}`);
           delete votaciones[idMensaje];
-          fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
+          fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
               if (err) {
                 return console.error("Error: " + err);
               } else {
