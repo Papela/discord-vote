@@ -24,6 +24,7 @@
         "checkVoteMessageId": "Comprobando (ID del Mensaje): ${idvotacion}",
         "compareTime": "Hora actual: ${currentTime.getHours()}:${currentTime.getMinutes()}, Fecha Fin: ${endTime.getHours()}:${endTime.getMinutes()}",
         "finalResults": "Resultados finales (despues de eliminar las no validas, las repetidas): ✅= ${upvotes} ❌= ${downvotes}",
+        "finalResultsWithoutTime": "Resultados actuales (despues de eliminar las no validas, las repetidas): [yesReaction] = ${upvotes} [noReaction] = ${downvotes}",
         "errorRemoveReactions": "Error al eliminar las reacciones. Error: ",
         "voteRemoved": "Votacion eliminado del registro.",
         "voteEnded": "Votacion Finalizada Correctamente.",
@@ -36,16 +37,16 @@
         "footer": "Votacion iniciada por ${message.author.username}",
         "voteNoChange": "Tu voto no ha cambiado!",
         "voteMsg": "Has votado correctamente!",
-        "descriptionWithoutTime": "Resultados actuales de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos\nEsta votacion todavía no ha finalizado!",
+        "descriptionWithoutTime": "Resultados actuales de la votación: \n[btnYes]: ${results.yes} votos \n [btnNo]: ${results.no} votos\nEsta votacion todavía no ha finalizado!",
         "footerWithoutTime": "Votacion iniciada por ${message.author.username}! Los resultados seran la cantidad de reacciones en el momento deseado.",
-        "descriptionEnded": "Resultados de la votación: \n✅: ${results.yes} votos \n❌: ${results.no} votos"
+        "descriptionEnded": "Resultados de la votación: \n[btnYes]: ${results.yes} votos \n[btnNo]: ${results.no} votos"
     },
     "MODE-ADVANCED":{
         "yesReaction": "✅",
         "noReaction": "❌",
         "footer": "Votacion iniciada por ${message.author.username}",
         "description": "Tiempo restante: <t:${Math.floor(endTime.getTime() / 1000)}:R> (aproximadamente)",
-        "descriptionWithoutTime": "Resultados actuales de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\nEsta votacion todavía no ha finalizado!\nLa votación emepezo el <t:${Math.floor(startTime.getTime() / 1000)}:f>",
-        "descriptionEnded": "Resultados de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\n La votación finalizo el: <t:${Math.floor(endTime.getTime() / 1000)}:f>"
+        "descriptionWithoutTime": "Resultados actuales de la votación: \n[yesReaction]: ${upvotes} votos \n[noReaction]: ${downvotes} votos\nEsta votacion todavía no ha finalizado!\nLa votación emepezo el <t:${Math.floor(startTime.getTime() / 1000)}:f>",
+        "descriptionEnded": "Resultados de la votación: \n[yesReaction]: ${upvotes} votos \n[noReaction]: ${downvotes} votos\n La votación finalizo el: <t:${Math.floor(endTime.getTime() / 1000)}:f>"
     }
 }

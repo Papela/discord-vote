@@ -148,7 +148,7 @@ class DiscordVote {
             if (fetchedMessage) {
               const VotacionResultados = new EmbedBuilder()
                 .setTitle(title)
-                .setDescription(modeNormal['descriptionWithoutTime'].replace('${results.yes}',results.yes).replace('${results.no}',results.no))
+                .setDescription(modeNormal['descriptionWithoutTime'].replace('${results.yes}',results.yes).replace('${results.no}',results.no).replace('[btnYes]',modeNormal['btnYes']).replace('[btnNo]', modeNormal['btnNo']))
                 .setColor(color)
                 .setTimestamp();
                 voteMessage.edit({ embeds: [VotacionResultados] });
@@ -173,7 +173,7 @@ class DiscordVote {
       if (fetchedMessage) {
         const VotacionResultados = new EmbedBuilder()
               .setTitle(title)
-              .setDescription(modeNormal['descriptionEnded'].replace('${results.yes}',results.yes).replace('${results.no}',results.no))
+              .setDescription(modeNormal['descriptionEnded'].replace('[btnYes]',modeNormal['btnYes']).replace('[btnNo]',modeNormal['btnNo']).replace('${results.yes}',results.yes).replace('${results.no}',results.no))
               .setColor(color)
               .setTimestamp();
               voteMessage.edit({ embeds: [VotacionResultados], components: [] });
@@ -212,12 +212,12 @@ class DiscordVote {
           Votacion = new EmbedBuilder()
             .setTitle(title)
             .setColor(8463563)
-            .setFooter({ text: `Votacion iniciada por ${message.author.username}!`});
+            .setFooter({ text: modeAdvanced['footer'].replace('${message.author.username}',message.author.username)});
         }else{
           Votacion = new EmbedBuilder()
             .setTitle(title)
-            .setDescription(`Tiempo restante: <t:${Math.floor(endTime.getTime() / 1000)}:R> aproximadamente`)
-            .setFooter({ text: `Votacion iniciada por ${message.author.username}`})
+            .setDescription(modeAdvanced['description'].replace('${Math.floor(endTime.getTime() / 1000)}', Math.floor(endTime.getTime() / 1000)))
+            .setFooter({ text: modeAdvanced['footer'].replace('${message.author.username}',message.author.username)})
             .setColor(8463563)
             .setTimestamp(endTime);
         }
@@ -257,8 +257,8 @@ class DiscordVote {
       
         if(debug)
             console.debug(debugError['voteStarted']);
-        message.react("✅");
-        message.react("❌");
+        message.react(modeAdvanced['yesReaction']);
+        message.react(modeAdvanced['noReaction']);
         });
       }
   }else{
@@ -322,13 +322,13 @@ class DiscordVote {
                   return console.error("Error: " + err);
                 } else {
                   if(debug)
-                  return console.debug("No se ha encontrado el servidor. Votacion Finalizada!");
+                  return console.debug(debugError['serverNotFound'].replace('${votacion.idServer}', votacion.idServer));
                 }
               });
           }
           let channel = server.channels.cache.get(votacion.idCanal); // Obtener el canal correspondiente
           if (!channel) {
-            console.warn(`No se ha encontrado el canal con ID ${votacion.idCanal}`);
+            console.warn(debugError['channelNotFound']);
             delete votaciones[idMensaje];
             fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
                 if (err) {
@@ -342,7 +342,7 @@ class DiscordVote {
           // Obtener el mensaje de votación utilizando el ID del mensaje
           let mensajeVotacion = channel.messages.fetch(messageId);
           if(!mensajeVotacion){
-            console.warn(`No se ha encontrado el mensaje con ID ${votacion.idCanal}`);
+            console.warn(debugError['voteNotFound']);
             delete votaciones[idMensaje];
             fs.writeFile(ruta, JSON.stringify(votaciones, null, 2), err => {
                 if (err) {
@@ -358,19 +358,19 @@ class DiscordVote {
             // Obtener la cantidad de reacciones de cada tipo
             const reactions = message.reactions.cache;
             
-            const upvoteUsers = await reactions.get("✅").users.fetch();
-            const downvoteUsers = await reactions.get("❌").users.fetch();
+            const upvoteUsers = await reactions.get(modeAdvanced['yesReaction']).users.fetch();
+            const downvoteUsers = await reactions.get(modeAdvanced['noReaction']).users.fetch();
           
             // Eliminar las reacciones de los usuarios que hayan reaccionado con ambos emojis
             const usersToRemove = upvoteUsers.filter(user => downvoteUsers.has(user.id));
             usersToRemove.forEach(user => {
               if (user.bot) return;
-              reactions.get("✅").users.remove(user.id);
-              reactions.get("❌").users.remove(user.id);
+              reactions.get(modeAdvanced['yesReaction']).users.remove(user.id);
+              reactions.get(modeAdvanced['noReaction']).users.remove(user.id);
             });
               
-              const upvotes = reactions.get("✅").count - 1; // Restar 1 para excluir la reacción del bot
-              const downvotes = reactions.get("❌").count - 1; // Restar 1 para excluir la reacción del bot
+              const upvotes = reactions.get(modeAdvanced['yesReaction']).count - 1; // Restar 1 para excluir la reacción del bot
+              const downvotes = reactions.get(modeAdvanced['noReaction']).count - 1; // Restar 1 para excluir la reacción del bot
               if(debug)
                 console.debug(debugError['finalResults'].replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
               message.reactions.removeAll().catch(error => console.error(debugError['errorRemoveReactions'], error));
@@ -387,7 +387,7 @@ class DiscordVote {
               // Editar el mensaje de votación con los resultados
               const VotacionResultados = new EmbedBuilder()
                 .setTitle(votacion.titulo)
-                .setDescription(`Resultados de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\n La votación finalizo el: <t:${Math.floor(endTime.getTime() / 1000)}:f>`)
+                .setDescription( modeAdvanced['descriptionEnded'].replace('[yesReaction]',modeAdvanced['yesReaction']).replace('[noReaction]',modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes).replace('${Math.floor(endTime.getTime() / 1000)}', Math.floor(endTime.getTime() / 1000)))
                 .setColor(color)
                 .setTimestamp();
                 await message.edit({ embeds: [VotacionResultados] });                                                         
@@ -418,7 +418,7 @@ class DiscordVote {
       const messageId = votacion.idMensaje; // Obtener el ID del mensaje de votación
         let server = client.guilds.cache.get(votacion.idServer);
         if(!server){
-          console.warn(`No se ha encontrado el servidor con el ID: ${votacion.idServer}`);
+          console.warn(debugError['serverNotFound'].replace('${votacion.idServer}', votacion.idServer));
           delete votaciones[idMensaje];
           fs.writeFile('./databases/votaciones.json', JSON.stringify(votaciones, null, 2), err => {
               if (err) {
@@ -452,7 +452,7 @@ class DiscordVote {
                 console.error("Error: " + err);
               } else {
                 if(debug)
-                return console.debug("No se ha encontrado el mensaje. Votacion Finalizada!");
+                return console.debug(debugError['voteNotFound']);
               }
             });
         }
@@ -460,21 +460,21 @@ class DiscordVote {
           // Obtener la cantidad de reacciones de cada tipo
           const reactions = message.reactions.cache;
           
-          const upvoteUsers = await reactions.get("✅").users.fetch();
-          const downvoteUsers = await reactions.get("❌").users.fetch();
+          const upvoteUsers = await reactions.get(modeAdvanced['yesReaction']).users.fetch();
+          const downvoteUsers = await reactions.get(modeAdvanced['noReaction']).users.fetch();
         
           // Eliminar las reacciones de los usuarios que hayan reaccionado con ambos emojis
           const usersToRemove = upvoteUsers.filter(user => downvoteUsers.has(user.id));
           usersToRemove.forEach(user => {
             if (user.bot) return;
-            reactions.get("✅").users.remove(user.id);
-            reactions.get("❌").users.remove(user.id);
+            reactions.get(modeAdvanced['yesReaction']).users.remove(user.id);
+            reactions.get(modeAdvanced['noReaction']).users.remove(user.id);
           });
             
-            const upvotes = reactions.get("✅").count - 1; // Restar 1 para excluir la reacción del bot
-            const downvotes = reactions.get("❌").count - 1; // Restar 1 para excluir la reacción del bot
+            const upvotes = reactions.get(modeAdvanced['yesReaction']).count - 1; // Restar 1 para excluir la reacción del bot
+            const downvotes = reactions.get(modeAdvanced['noReaction']).count - 1; // Restar 1 para excluir la reacción del bot
             if(debug)
-              console.debug("Resultados actuales (despues de eliminar las no validas, las repetidas): ✅=" + upvotes + " ❌=" + downvotes);
+              console.debug(modeAdvanced['finalResultsWithoutTime'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}',upvotes).replace('${downvotes}', downvotes));
 
             let color = 8463563;
           if(upvotes > downvotes){
@@ -488,7 +488,7 @@ class DiscordVote {
             // Editar el mensaje de votación con los resultados
             const VotacionResultados = new EmbedBuilder()
               .setTitle(votacion.titulo)
-              .setDescription(`Resultados actuales de la votación: \n✅: ${upvotes} votos \n❌: ${downvotes} votos\nEsta votacion todavía no ha finalizado!\nLa votación emepezo el <t:${Math.floor(startTime.getTime() / 1000)}:f>`)
+              .setDescription(modeAdvanced['description'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}',upvotes).replace('${downvotes}',downvotes))
               .setColor(color)
               .setTimestamp();
               await message.edit({ embeds: [VotacionResultados] });
