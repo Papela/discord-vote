@@ -23,7 +23,7 @@
         "checkingVote": "Comprobando votaciones...",
         "checkVoteMessageId": "Comprobando (ID del Mensaje): ${idvotacion}",
         "compareTime": "Hora actual: ${currentTime.getHours()}:${currentTime.getMinutes()}, Fecha Fin: ${endTime.getHours()}:${endTime.getMinutes()}",
-        "finalResults": "Resultados finales (despues de eliminar las no validas, las repetidas): ✅= ${upvotes} ❌= ${downvotes}",
+        "finalResults": "Resultados finales (despues de eliminar las no validas, las repetidas): [yesReaction]= ${upvotes} [noReaction]= ${downvotes}",
         "finalResultsWithoutTime": "Resultados actuales (despues de eliminar las no validas, las repetidas): [yesReaction] = ${upvotes} [noReaction] = ${downvotes}",
         "errorRemoveReactions": "Error al eliminar las reacciones. Error: ",
         "voteRemoved": "Votacion eliminado del registro.",
