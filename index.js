@@ -474,7 +474,7 @@ class DiscordVote {
             const upvotes = reactions.get(modeAdvanced['yesReaction']).count - 1; // Restar 1 para excluir la reacción del bot
             const downvotes = reactions.get(modeAdvanced['noReaction']).count - 1; // Restar 1 para excluir la reacción del bot
             if(debug)
-              console.debug(modeAdvanced['finalResultsWithoutTime'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}',upvotes).replace('${downvotes}', downvotes));
+              console.debug(debugError['finalResultsWithoutTime'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
 
             let color = 8463563;
           if(upvotes > downvotes){
