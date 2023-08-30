@@ -21,13 +21,12 @@ class DiscordVote {
     this.debug = options.debug || false;
     this.lang = options.lang || 'es';
     this.idioma = require('./LanguageFiles/es.json');
-  }
-
-  async checkVotaciones() {
-    const intervalTime = this.checkTime; // Intervalo en milisegundos (1 minuto)
-    setInterval(async () => {
-      this.checkVotacionManual();
-    }, intervalTime);
+    if(((this.mode == 1) ? true : false) && this.checkTime > 0){
+      const intervalTime = this.checkTime; // Intervalo en milisegundos (1 minuto)
+      setInterval(async () => {
+        this.checkVotaciones();
+      }, intervalTime);
+    }
   }
 
   async createVote(message, title, duration, savePath = this.savePath, debug = this.debug, lang = this.lang) {
@@ -153,6 +152,10 @@ class DiscordVote {
                 .setColor(color)
                 .setTimestamp();
                 voteMessage.edit({ embeds: [VotacionResultados] });
+            
+                if(debug)
+                console.log(debugError['NormalFinalResultsWithoutTime'].replace('[btnYes]',modeNormal['btnYes']).replace('[btnNo]',modeNormal['btnNo']).replace('${results.yes}',results.yes).replace('${results.no}',results.no))
+
             }else{
               if(debug)
               console.debug(debugError['voteNotFound']);
@@ -178,6 +181,10 @@ class DiscordVote {
               .setColor(color)
               .setTimestamp();
               voteMessage.edit({ embeds: [VotacionResultados], components: [] });
+
+        if(debug)
+        console.log(debugError['NormalFinalResults'].replace('[btnYes]',modeNormal['btnYes']).replace('[btnNo]',modeNormal['btnNo']).replace('${results.yes}',results.yes).replace('${results.no}',results.no))
+
       }else{
         if(debug)
         console.debug(debugError['voteNotFound']);
@@ -268,7 +275,7 @@ class DiscordVote {
   }
 
 
-  checkVotacionManual(client = this.client, debug = this.debug) {
+  checkVotaciones(client = this.client, debug = this.debug) {
     const debugError = this.idioma['DEBUG-ERROR'];
     const modeNormal = this.idioma['MODE-NORMAL'];
     const modeAdvanced = this.idioma['MODE-ADVANCED'];
@@ -373,7 +380,7 @@ class DiscordVote {
               const upvotes = reactions.get(modeAdvanced['yesReaction']).count - 1; // Restar 1 para excluir la reacción del bot
               const downvotes = reactions.get(modeAdvanced['noReaction']).count - 1; // Restar 1 para excluir la reacción del bot
               if(debug)
-                console.debug(debugError['finalResults'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
+                console.debug(debugError['AdvancedFinalResults'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
               message.reactions.removeAll().catch(error => console.error(debugError['errorRemoveReactions'], error));
 
               let color = 8463563;
@@ -475,7 +482,7 @@ class DiscordVote {
             const upvotes = reactions.get(modeAdvanced['yesReaction']).count - 1; // Restar 1 para excluir la reacción del bot
             const downvotes = reactions.get(modeAdvanced['noReaction']).count - 1; // Restar 1 para excluir la reacción del bot
             if(debug)
-              console.debug(debugError['finalResultsWithoutTime'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
+              console.debug(debugError['AdvancedFinalResultsWithoutTime'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
 
             let color = 8463563;
           if(upvotes > downvotes){

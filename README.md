@@ -32,6 +32,7 @@ const DiscordVote = require('discord-vote');
 const votacion = new DiscordVote({
     client:client, //El cliente
     mode:0}); //Modo de votacion. (0 = Normal, 1 = Avanzado)
+
 client.on('messageCreate', async (message) => {
       if (message.content.startsWith("!votacion")) {
         if (args.length >= 2) {
@@ -56,9 +57,9 @@ const votacion = new DiscordVote({
   mode:1, //Modo de votacion. (0 = Normal, 1 = Avanzado)
   savePath: './votaciones.json', //Ruta de guardado (Avanzado)
   checkTime: 60000, //tiempo de comprobacion (Avanzado)
-  debug: false}); //Muestra mas logs con informacion de las votaciones (no recomendado)
+  debug: false}); //Muestra mas logs con informacion de las votaciones (no recomendado al tener muchas votaciones activas)
+
 //*Todo lo del modo avanzado es completamente opcional.*/
-votacion.checkVotaciones(); //Utilizado para llamar a la funcion que comprueba las votaciones usando checkTime (por defeto 1 Minuto). *Necesario al usar el modo avanzado
 
 client.on('messageCreate', async (message) => {
       if (message.content.startsWith("!votacion")) {
@@ -79,7 +80,6 @@ client.login("TOKEN DEL BOT");
 ```javascript
 + createVote(message, duration, title, savePath, debug);
 + checkVotaciones();
-+ checkVotacionManual();
 ```
 #### createVote
 _Inicia una votación con la duración, título y canal especificados._
@@ -89,9 +89,10 @@ _Inicia una votación con la duración, título y canal especificados._
 - *savePath*: Ruta de guardado personalizado. (opcional y solo para el modo Avanzado).
 - *debug*: true o false (opcional).
 #### checkVotaciones
-_Comprueba las votaciones cada X tiempo. Definido anteriormente. (checkTime)_
-#### checkVotacionManual
-_Comprueba las votaciones al momento de llamar al metodo._
+_Comprueba y actualiza las votaciones._
+- Puedes automatizar las llamadas usando _checkTime_ en las opciones
+- Al llamar a la funcion, ejecutaras la actualizacion de las votaciones manualmente.
+- Usar un tiempo igual a "0", deshabilitara la comprobacion automatica.
 
 ## Licencia
 Este proyecto está licenciado bajo la Licencia GPL-3.0. Ver el archivo [LICENSE](https://github.com/Papela/discord-vote/blob/main/LICENSE) para más detalles.
