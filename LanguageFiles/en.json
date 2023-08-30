@@ -1,0 +1,52 @@
+{
+    "DEBUG-ERROR": {
+      "errorTitle": "Error. Invalid title",
+      "errorSavePath": "Error. Invalid save path",
+      "warnMode0Time0": "You are using the 'Normal' mode with a time of 0. This is not recommended because if the bot stops working, the previous votes will stop working!",
+      "warnMode0TimeBig": "You are using the 'Normal' mode with a time greater than 1 day. This is not recommended because if the bot stops working, the previous votes will stop working!",
+      "noVotesDeletes": "No Votes Eliminated by: ${interaction.user.username}",
+      "removeVoteYes": "'Yes' vote removed (possibly changed) by: ${interaction.user.username}",
+      "removeVoteNo": "'No' vote removed (possibly changed) by: ${interaction.user.username}",
+      "addVoteYes": "'Yes' vote added by: ${interaction.user.username}",
+      "addVoteNo": "'No' vote added by: ${interaction.user.username}",
+      "voteNotFound": "The message of the vote ceased to exist!",
+      "serverNotFound": "Server not found with ID: ${votacion.idServer}",
+      "channelNotFound": "Channel not found. Voting Completed!",
+      "creatingFile": "The save file does not exist. Creating file...",
+      "errorCreatingFile": "The file was not created due to an error. Error: ",
+      "fileCreated": "Successfully created save file.",
+      "voteInfo": "Duration: ${duration} and title: ${title}",
+      "invalidData": "Invalid data!",
+      "voteJson": "Voting: ${votacionJson}",
+      "voteStarted": "Voting started!",
+      "invalidMode": "Non-valid mode of use! Use 0 (Normal) or 1 (Advanced)",
+      "checkingVote": "Checking votes...",
+      "checkVoteMessageId": "Checking (Message ID): ${idvotacion}",
+      "compareTime": "Current time: ${currentTime.getHours()}:${currentTime.getMinutes()}, End date: ${endTime.getHours()}:${endTime.getMinutes()}",
+      "finalResults": "Final results (after removing invalid, repeated): [yesReaction]= ${upvotes} [noReaction]= ${downvotes}",
+      "finalResultsWithoutTime": "Current results (after removing invalid, repeated): [yesReaction] = ${upvotes} [noReaction] = ${downvotes}",
+      "errorRemoveReactions": "Error deleting reactions. Error:",
+      "voteRemoved": "Vote removed from the register.",
+      "voteEnded": "Voting completed successfully.",
+      "updateMsgWithoutTime": "Updating voting with time to 0"
+    },
+    "MODE-NORMAL": {
+      "btnYes": "Yes",
+      "btnNo": "No",
+      "description": "Time remaining: <t:${Math.floor(endTime.getTime() / 1000)}:R>",
+      "footer": "Voting started by ${message.author.username}",
+      "voteNoChange": "Your vote has not changed!",
+      "voteMsg": "You voted correctly!",
+      "descriptionWithoutTime": "Current results of the vote: \n[btnYes]: ${results.yes} votes \n [btnNo]: ${results.no} votes\nThis vote is not yet finished!",
+      "footerWithoutTime": "Voting started by ${message.author.username}! The results will be the number of reactions at the desired time.",
+      "descriptionEnded": "Results of the vote: \n[btnYes]: ${results.yes} votes \n[btnNo]: ${results.no} votes"
+    },
+    "MODE-ADVANCED": {
+      "yesReaction": "✅",
+      "noReaction": "❌",
+      "footer": "Voting started by ${message.author.username}",
+      "description": "Time remaining: <t:${Math.floor(endTime.getTime() / 1000)}:R> (approximately)",
+      "descriptionWithoutTime": "Current results of the vote: \n[yesReaction]: ${upvotes} votes \n[noReaction]: ${downvotes} votes\nThis vote is not yet finished!\nVoting began on <t:${Math.floor(startTime.getTime() / 1000)}:f>",
+      "descriptionEnded": "Results of the vote: \n[yesReaction]: ${upvotes} votes \n[noReaction]: ${downvotes} votes\n Voting ended on: <t:${Math.floor(endTime.getTime() / 1000)}:f>"
+    }
+  }

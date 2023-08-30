@@ -46,7 +46,7 @@
         "noReaction": "❌",
         "footer": "Votacion iniciada por ${message.author.username}",
         "description": "Tiempo restante: <t:${Math.floor(endTime.getTime() / 1000)}:R> (aproximadamente)",
-        "descriptionWithoutTime": "Resultados actuales de la votación: \n[yesReaction]: ${upvotes} votos \n[noReaction]: ${downvotes} votos\nEsta votacion todavía no ha finalizado!\nLa votación emepezo el <t:${Math.floor(startTime.getTime() / 1000)}:f>",
+        "descriptionWithoutTime": "Resultados actuales de la votación: \n[yesReaction]: ${upvotes} votos \n[noReaction]: ${downvotes} votos\nEsta votacion todavía no ha finalizado!\nLa votación empezo el <t:${Math.floor(startTime.getTime() / 1000)}:f>",
         "descriptionEnded": "Resultados de la votación: \n[yesReaction]: ${upvotes} votos \n[noReaction]: ${downvotes} votos\n La votación finalizo el: <t:${Math.floor(endTime.getTime() / 1000)}:f>"
     }
 }
