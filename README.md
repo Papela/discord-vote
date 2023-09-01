@@ -1,6 +1,7 @@
 # Discord-vote
 
 [![npm version](https://img.shields.io/npm/v/discord-vote.svg)](https://www.npmjs.com/package/discord-vote)
+[![downloads](https://img.shields.io/npm/dt/discord-vote.svg)](https://github.com/Papela/discord-vote/)
 [![license](https://img.shields.io/npm/l/discord-vote.svg)](https://github.com/Papela/discord-vote/blob/main/LICENSE)
 
 Un paquete NPM para poder tener un sistema de votaciones para Discord.js 14 de manera sencilla.
@@ -78,12 +79,12 @@ client.login("TOKEN DEL BOT");
 
 ## Funciones
 ```javascript
-+ createVote(message, duration, title, savePath, debug);
++ createVote(message, title, duration, savePath, debug);
 + checkVotaciones();
 ```
 #### createVote
 _Inicia una votación con la duración, título y canal especificados._
-- *message*: Mensaje del la accion que tiene el cliente. (client.on('messageCreate',async(message) => {})En algunos casos puede ser: "msg"
+- *message*: Mensaje del evento que tiene el cliente. (client.on('messageCreate',async(**message**) => {})En algunos casos puede ser: "msg"
 - *title*: Título de la votación.
 - *duration*: Duración de la votación en minutos.
 - *savePath*: Ruta de guardado personalizado. (opcional y solo para el modo Avanzado).
