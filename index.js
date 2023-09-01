@@ -1,5 +1,7 @@
 //USAR RAMAS PARA LAS UPDATES!!
 //FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
+//TODO Cambiar el comentario de debug de los idiomas!
+//TODO Cambiar el time del check? de milisegundos a segundos o minutos?
 //FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 /*Posible forma para modo 0:
 message.channel.client.on('messageDelete', (deletedMessage) => {
@@ -20,7 +22,30 @@ class DiscordVote {
     this.checkTime = options.checkTime || 60000;
     this.debug = options.debug || false;
     this.lang = options.lang || 'es';
-    this.idioma = require('./LanguageFiles/es.json');
+
+    if(this.lang != "es" && this.lang != "en"){
+      if(!this.lang.includes(".json")){
+        return console.error("El formato del lenguaje no es valido!. Utiliza: 'es' (Español), 'en' (Ingles) o './miidioma.json'");
+      }else{
+        if (!fs.existsSync(this.lang)) {
+          const defaultLang = fs.readFileSync('./LanguageFiles/en.json', 'utf8');
+          fs.writeFile(this.lang, defaultLang, err => {
+            if (err) {
+              console.error("Error al crear el ficher. Error: "+ err);
+            }else{
+              console.warn("Fichero de idioma creado correctamente!");
+            }
+          });
+        }
+        this.idioma = require(this.lang);
+      }
+
+    }else if (this.lang == "es"){
+      this.idioma = require('./LanguageFiles/es.json');
+    }else{
+      this.idioma = require('./LanguageFiles/en.json');
+    }
+    console.log("El idioma que se esta utilizando es: " + this.lang + ", en la ruta: " + this.idioma); //Borrar
     if(((this.mode == 1) ? true : false) && this.checkTime > 0){
       const intervalTime = this.checkTime; // Intervalo en milisegundos (1 minuto)
       setInterval(async () => {
