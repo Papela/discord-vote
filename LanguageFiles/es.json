@@ -1,6 +1,9 @@
 {
     "DEBUG-ERROR": {
         "errorTitle": "Error. Título no válido",
+        "errorLangFileFormat": "El formato del lenguaje no es valido!. Utiliza: 'es' (Español), 'en' (Ingles) o './miidioma.json'",
+        "errorLangFormat": "El formato del fichero del lenguaje no es valido! Eliminalo para volver a crear la plantilla.",
+        "langInfo":"El idioma que se esta utilizando es: ",
         "errorSavePath": "Error. Ruta de guardado no válido",
         "warnMode0Time0": "Estás usando el modo 'Normal' con un tiempo de 0. ¡Esto es poco recomendable, ya que si el bot deja de funcionar, las votaciones anteriores, dejaran de funcionar!",
         "warnMode0TimeBig": "Estás usando el modo 'Normal' con un tiempo mayor a 1 día. ¡Esto es poco recomendable, ya que si el bot deja de funcionar, las votaciones anteriores, dejaran de funcionar!",
@@ -14,7 +17,7 @@
         "channelNotFound": "No se ha encontrado el canal. ¡Votación Finalizada!",
         "creatingFile": "El fichero de guardado no existe. Creando fichero...",
         "errorCreatingFile": "El fichero no se ha creado debido a un error. Error: ",
-        "fileCreated": "Fichero de guardado creado correctamente.",
+        "fileCreated": "Fichero de creado correctamente.",
         "voteInfo": "Duración: ${duration} y título: ${title}",
         "invalidData": "¡Datos no válidos!",
         "voteJson": "Votación: ${votacionJson}",

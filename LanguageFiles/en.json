@@ -1,6 +1,9 @@
 {
     "DEBUG-ERROR": {
       "errorTitle": "Error. Invalid title",
+      "errorLangFileFormat": "The language format is not valid! Use: 'es' (Spanish), 'en' (English) or './mylanguage.json'",
+      "errorLangFormat": "El formato del fichero del lenguaje no es valido! Eliminalo para volver a crear la plantilla.",
+      "langInfo": "The language being used is: ",
       "errorSavePath": "Error. Invalid save path",
       "warnMode0Time0": "You are using the 'Normal' mode with a time of 0. This is not recommended because if the bot stops working, the previous votes will stop working!",
       "warnMode0TimeBig": "You are using the 'Normal' mode with a time greater than 1 day. This is not recommended because if the bot stops working, the previous votes will stop working!",
@@ -14,7 +17,7 @@
       "channelNotFound": "Channel not found. Voting Completed!",
       "creatingFile": "The save file does not exist. Creating file...",
       "errorCreatingFile": "The file was not created due to an error. Error: ",
-      "fileCreated": "Successfully created save file.",
+      "fileCreated": "Successfully created file.",
       "voteInfo": "Duration: ${duration} and title: ${title}",
       "invalidData": "Invalid data!",
       "voteJson": "Voting: ${votacionJson}",

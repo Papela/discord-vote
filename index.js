@@ -5,6 +5,7 @@
 //Cambiar el time del check? de milisegundos a segundos o minutos?
 // Traducir todo a ingles? Readme incluido.
 
+//FIXME Arreglar linea 48 (Creando un nuevo fichero de idioma!)
 //FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
 /*FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 Posible forma para modo 0:
@@ -27,17 +28,30 @@ class DiscordVote {
     this.debug = options.debug || false;
     this.lang = options.lang || 'es';
 
+    if(this.debug)
+      console.log("Debug mode enabled!")
+
+    let langError = false;
+    const defaultLang = require('./LanguageFiles/en.json');
+
+    this.idioma = defaultLang;
+    const debugError = this.idioma['DEBUG-ERROR'];
+
     if(this.lang != "es" && this.lang != "en"){
       if(!this.lang.includes(".json")){
-        return console.error("El formato del lenguaje no es valido!. Utiliza: 'es' (Español), 'en' (Ingles) o './miidioma.json'");
+        langError = true;
+        this.idioma = defaultLang;
+        console.error(debugError['errorLangFormat']);
       }else{
-        if (!fs.existsSync(this.lang)) {
-          const defaultLang = fs.readFileSync('./LanguageFiles/en.json', 'utf8');
-          fs.writeFile(this.lang, defaultLang, err => {
+        if (!fs.existsSync(JSON.stringify(this.lang, null, 2))) {
+          console.warn(debugError['creatingFile']);
+          //FIXME Arreglar esto y comprobar si funciona todo (lo de los idiomas)
+          console.log("SP: " + JSON.stringify(this.lang, null, 2));
+          fs.writeFile(JSON.stringify(this.lang, null, 2), '{}', err => {
             if (err) {
-              console.error("Error al crear el ficher. Error: "+ err);
+              console.error(debugError['creatingFile'] + err);
             }else{
-              console.warn("Fichero de idioma creado correctamente!");
+              console.warn(debugError['fileCreated']);
             }
           });
         }
@@ -49,12 +63,34 @@ class DiscordVote {
     }else{
       this.idioma = require('./LanguageFiles/en.json');
     }
-    console.log("El idioma que se esta utilizando es: " + this.lang + ", en la ruta: " + this.idioma); //Borrar
+    if(this.debug)
+      if(langError){
+        console.log(debugError['langInfo'] + "en (English)");
+      }else{
+        console.log(debugError['langInfo'] + JSON.stringify(this.lang, null, 2));
+      }
     if(((this.mode == 1) ? true : false) && this.checkTime > 0){
       const intervalTime = this.checkTime; // Intervalo en milisegundos (1 minuto)
       setInterval(async () => {
         this.checkVotaciones();
       }, intervalTime);
+    }
+
+    function checkLangFileFormat(template, file) {
+      for (let key in template) {
+        if (!file.hasOwnProperty(key)) {
+          return false;
+        }
+        for (let subKey in template[key]) {
+          if (!file[key].hasOwnProperty(subKey)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    if(!checkLangFileFormat(defaultLang, this.idioma)){
+      this.idioma = defaultLang;
     }
   }
 
