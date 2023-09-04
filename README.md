@@ -120,7 +120,7 @@ If you want to contribute to this project, you can follow the following steps:
 4. Push to the branch: *git push origin new-feature*.
 5. Open a pull request on GitHub.
 
-&nbsp; 
+[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/import/github/Papela/discord-vote) 
 
 &nbsp; 
 
@@ -245,5 +245,5 @@ Si quieres contribuir a este proyecto, puedes seguir los siguientes pasos:
 3. Realiza tus cambios y haz commit: *git commit -m "Agrega nueva funcionalidad"*.
 4. Haz push a la rama: *git push origin nueva-funcionalidad*.
 5. Abre un pull request en GitHub.
-&nbsp;
+
 [![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/import/github/Papela/discord-vote)
