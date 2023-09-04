@@ -3,9 +3,10 @@
 //TODO Cambiar el comentario de debug de los idiomas!
 
 //Cambiar el time del check? de milisegundos a segundos o minutos?
-// Traducir todo a ingles? Readme incluido.
+// Cambiar checkVotaciones por checkVotes?
+// Traducir todo a ingles Imagenes incluidas.
 
-//FIXME Arreglar linea 48 (Creando un nuevo fichero de idioma!)
+//FIXME Arreglar linea 49 (Creando un nuevo fichero de idioma!)
 //FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
 /*FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 Posible forma para modo 0:
