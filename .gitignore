@@ -47,6 +47,7 @@ package-lock.json
 Pruebas/
 Versiones/
 apuntes.txt
+pnpm-lock.yaml
 
 
 # Snowpack dependency directory (https://snowpack.dev/)
