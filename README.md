@@ -18,7 +18,7 @@ An NPM package to easily have a voting system for Discord.js 14.
 
 <img src="https://i.ibb.co/T8B3nhs/image.png" />
 
-## Instalation
+## Installation
 
 To install the package, use one of the following commands:
 
