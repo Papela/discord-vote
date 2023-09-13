@@ -18,6 +18,7 @@
         "creatingFile": "El fichero de guardado no existe. Creando fichero...",
         "errorCreatingFile": "El fichero no se ha creado debido a un error. Error: ",
         "fileCreated": "Fichero de creado correctamente.",
+        "langFileCreated": "Fichero de lenguaje creado! Reinicia el projecto para aplicar los cambios!",
         "voteInfo": "Duración: ${duration} y título: ${title}",
         "invalidData": "¡Datos no válidos!",
         "voteJson": "Votación: ${votacionJson}",

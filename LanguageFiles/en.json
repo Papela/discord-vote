@@ -18,6 +18,7 @@
       "creatingFile": "The save file does not exist. Creating file...",
       "errorCreatingFile": "The file was not created due to an error. Error: ",
       "fileCreated": "Successfully created file.",
+      "langFileCreated": "Language file created! Restart the project to apply the changes!",
       "voteInfo": "Duration: ${duration} and title: ${title}",
       "invalidData": "Invalid data!",
       "voteJson": "Voting: ${votacionJson}",

@@ -6,7 +6,7 @@
 // Cambiar checkVotaciones por checkVotes?
 // Traducir todo a ingles Imagenes incluidas.
 
-//FIXME Arreglar linea 49 (Creando un nuevo fichero de idioma!)
+//FIXME Arreglar linea 47 (Detectando, si ya existe y es valido el fichero de idioma custom!)
 //FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
 /*FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 Posible forma para modo 0:
@@ -44,19 +44,20 @@ class DiscordVote {
         this.idioma = defaultLang;
         console.error(debugError['errorLangFormat']);
       }else{
-        if (!fs.existsSync(JSON.stringify(this.lang, null, 2))) {
+        //FIXME Arreglar que detecte si el fichero custom ya existe.
+        if (!fs.existsSync(this.lang)) {
           console.warn(debugError['creatingFile']);
-          //FIXME Arreglar esto y comprobar si funciona todo (lo de los idiomas)
-          console.log("SP: " + JSON.stringify(this.lang, null, 2));
-          fs.writeFile(JSON.stringify(this.lang, null, 2), '{}', err => {
+          fs.writeFile(this.lang, JSON.stringify(this.idioma, null, 2), err => {
             if (err) {
               console.error(debugError['creatingFile'] + err);
             }else{
-              console.warn(debugError['fileCreated']);
+              console.warn(debugError['langFileCreated']);
             }
           });
-        }
+          this.idioma = defaultLang;
+        }else{
         this.idioma = require(this.lang);
+        }
       }
 
     }else if (this.lang == "es"){
@@ -145,12 +146,8 @@ class DiscordVote {
         .setTimestamp();
       }
        const voteMessage = await message.channel.send({ embeds: [Votacion], components: [row] })
-      let collector = null;
-       if(duration != 0){
-        collector = voteMessage.createMessageComponentCollector({ filter, time: duration * 60 * 1000 });
-       }else{
-        collector = voteMessage.createMessageComponentCollector({ filter, time: null });
-       }
+       const time = duration !== 0 ? duration * 60 * 1000 : null;
+       const collector = voteMessage.createMessageComponentCollector({ filter, time });
 
     const votesByUser = new Map();
     const results = {
