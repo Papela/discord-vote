@@ -47,16 +47,24 @@ class DiscordVote {
         fs.access(this.lang, fs.F_OK, (err) => {
           if (err) {
           console.warn(debugError['creatingFile']);
-          fs.writeFile(this.lang, JSON.stringify(this.idioma, null, 2), err => {
+          fs.createReadStream('./discord-vote/LanguageFiles/en.json').pipe(fs.createWriteStream(this.lang));
+          /*fs.copyFile('./discord-vote/LanguageFiles/en.json', this.lang, (err) => {
+            if (err) {
+              console.log("Error Found:", err);
+            }
+          });*/
+          /*fs.writeFile(this.lang, JSON.stringify(this.idioma, null, 2), err => {
             if (err) {
               console.error(debugError['creatingFile'] + err);
             }else{
               console.warn(debugError['langFileCreated']);
             }
-          });
+          });*/
           this.idioma = defaultLang;
         }else{
-          this.idioma = require(this.lang);
+          //this.idioma = require('C:/Users/Markos/Desktop/OboBot/OboBot/idioma.json');
+          this.idioma = fs.readFileSync(this.lang, 'utf8');
+          console.log("Lang: " + this.idioma);
         }
       });
     }
