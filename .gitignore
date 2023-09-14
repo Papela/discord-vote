@@ -48,6 +48,7 @@ Pruebas/
 Versiones/
 apuntes.txt
 pnpm-lock.yaml
+bun.lockb
 
 
 # Snowpack dependency directory (https://snowpack.dev/)

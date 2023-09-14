@@ -6,7 +6,7 @@
 // Cambiar checkVotaciones por checkVotes?
 // Traducir todo a ingles Imagenes incluidas.
 
-//FIXME Arreglar linea 47 (Detectando, si ya existe y es valido el fichero de idioma custom!)
+//FIXME Arreglar 47-56 (Clona mal y ver si es valido el fichero de idioma custom!)
 //FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
 /*FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 Posible forma para modo 0:
@@ -44,8 +44,8 @@ class DiscordVote {
         this.idioma = defaultLang;
         console.error(debugError['errorLangFormat']);
       }else{
-        //FIXME Arreglar que detecte si el fichero custom ya existe.
-        if (!fs.existsSync(this.lang)) {
+        fs.access(this.lang, fs.F_OK, (err) => {
+          if (err) {
           console.warn(debugError['creatingFile']);
           fs.writeFile(this.lang, JSON.stringify(this.idioma, null, 2), err => {
             if (err) {
@@ -56,21 +56,24 @@ class DiscordVote {
           });
           this.idioma = defaultLang;
         }else{
-        this.idioma = require(this.lang);
+          this.idioma = require(this.lang);
         }
-      }
+      });
+    }
 
     }else if (this.lang == "es"){
       this.idioma = require('./LanguageFiles/es.json');
     }else{
       this.idioma = require('./LanguageFiles/en.json');
     }
-    if(this.debug)
+    //FIXME Eliminar este if y mostrar aviso de error?
+    if(this.debug){
       if(langError){
-        console.log(debugError['langInfo'] + "en (English)");
+        console.log(debugError['langInfo'] + "(English)");
       }else{
         console.log(debugError['langInfo'] + JSON.stringify(this.lang, null, 2));
       }
+    }
     if(((this.mode == 1) ? true : false) && this.checkTime > 0){
       const intervalTime = this.checkTime; // Intervalo en milisegundos (1 minuto)
       setInterval(async () => {
