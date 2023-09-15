@@ -6,7 +6,10 @@
 // Cambiar checkVotaciones por checkVotes?
 // Traducir todo a ingles Imagenes incluidas.
 
-//FIXME Arreglar 47-56 (Clona mal y ver si es valido el fichero de idioma custom!)
+//Cambiar el defualtLang ( por lo menos a la hora de leer los ficheros) y añadir en lang el mensaje de que reinicie para aplicar cambios (una vez se cree el nuevo fichero de lang custom). Linea 53
+
+//FIXME Hacer que compruebe si el fichero del lenguaje es valido! (Version 1.1.1?)
+
 //FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
 /*FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 Posible forma para modo 0:
@@ -48,23 +51,10 @@ class DiscordVote {
           if (err) {
           console.warn(debugError['creatingFile']);
           fs.createReadStream('./discord-vote/LanguageFiles/en.json').pipe(fs.createWriteStream(this.lang));
-          /*fs.copyFile('./discord-vote/LanguageFiles/en.json', this.lang, (err) => {
-            if (err) {
-              console.log("Error Found:", err);
-            }
-          });*/
-          /*fs.writeFile(this.lang, JSON.stringify(this.idioma, null, 2), err => {
-            if (err) {
-              console.error(debugError['creatingFile'] + err);
-            }else{
-              console.warn(debugError['langFileCreated']);
-            }
-          });*/
-          this.idioma = defaultLang;
+          this.idioma = JSON.parse(fs.readFileSync('./discord-vote/LanguageFiles/en.json', 'utf8'));
+          console.log("Mensaje de fichero de idioma custom creado, reiniciar para aplicar cambios.");
         }else{
-          //this.idioma = require('C:/Users/Markos/Desktop/OboBot/OboBot/idioma.json');
-          this.idioma = fs.readFileSync(this.lang, 'utf8');
-          console.log("Lang: " + this.idioma);
+          this.idioma = JSON.parse(fs.readFileSync(this.lang, 'utf8'));
         }
       });
     }
