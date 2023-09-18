@@ -67,7 +67,7 @@ const votacion = new DiscordVote({
   client:client, //The Client
   mode:0, //Voting mode. (0 = Normal, 1 = Advanced) (Optional. Default: "normal")
   savePath: './votaciones.json', //Voting saving path (Advanced)
-  checkTime: 60000, //Check time in milliseconds (Advanced)
+  checkTime: 60, //Check time in seconds (Advanced)
   debug: false, //Show more logs with voting information (not recommended if there are many votes!)
   lang: "en"}); //The language of the package. For example: "en" (english), "es" (spanish) or ./custom.json (Optional. Default: English)
 
@@ -193,7 +193,7 @@ const votacion = new DiscordVote({
   client:client, //El cliente
   mode:1, //Modo de votacion. (0 = Normal, 1 = Avanzado) (Opcional. Por defecto: Ingles)
   savePath: './votaciones.json', //Ruta de guardado de las votaciones (Avanzado)
-  checkTime: 60000, //tiempo de comprobacion en milisegundos. (Avanzado)
+  checkTime: 60, //tiempo de comprobacion en segundos. (Avanzado)
   debug: false, //Muestra mas logs con informacion de las votaciones (no recomendado si hay muchas votaciones!)
   lang: "en"}); //El lenguaje del paquete. Por ejemplo: "es" (Español), "en" (Ingles) o ./miidioma.json (Opcional. Por defecto: Ingles) 
 

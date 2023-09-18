@@ -2,15 +2,20 @@
 
 //TODO Cambiar el comentario de debug de los idiomas!
 
-//Cambiar el time del check? de milisegundos a segundos o minutos?
-// Cambiar checkVotaciones por checkVotes?
 // Traducir todo a ingles Imagenes incluidas.
 
-//Cambiar el defualtLang ( por lo menos a la hora de leer los ficheros) y añadir en lang el mensaje de que reinicie para aplicar cambios (una vez se cree el nuevo fichero de lang custom). Linea 53
+//Cambiar el defualtLang ( por lo menos a la hora de leer los ficheros) y añadir en lang el mensaje de que reinicie para aplicar cambios (una vez se cree el nuevo fichero de lang custom). Linea 58
+
+//Comprobar si los idiomas funcionan al ser un paquete
 
 //FIXME Hacer que compruebe si el fichero del lenguaje es valido! (Version 1.1.1?)
 
-//FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
+/*FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
+En caso de que la reaccion no este, por la version 1.0.X por ejemplo, usar el del lang por ejemplo?
+Comprobar si funciona!*/
+
+//Cambiar yesReaction y noReaction por reaction1 y reaction2?
+
 /*FIXME Arreglar el borrado del mensaje de votaciones en modo 0 y 1.
 Posible forma para modo 0:
 message.channel.client.on('messageDelete', (deletedMessage) => {
@@ -28,7 +33,7 @@ class DiscordVote {
     this.client = options.client;
     this.mode = options.mode || 0;
     this.savePath = options.savePath || "./discord-vote.json";
-    this.checkTime = options.checkTime || 60000;
+    this.checkTime = options.checkTime || 60;
     this.debug = options.debug || false;
     this.lang = options.lang || 'es';
 
@@ -36,15 +41,16 @@ class DiscordVote {
       console.log("Debug mode enabled!")
 
     let langError = false;
-    const defaultLang = require('./LanguageFiles/en.json');
+    const defaultIdioma = require('./LanguageFiles/en.json');
+    const defaultLang = './LanguageFiles/en.json'; //USAR ESTO!
 
-    this.idioma = defaultLang;
+    this.idioma = defaultIdioma;
     const debugError = this.idioma['DEBUG-ERROR'];
 
     if(this.lang != "es" && this.lang != "en"){
       if(!this.lang.includes(".json")){
         langError = true;
-        this.idioma = defaultLang;
+        this.idioma = defaultIdioma;
         console.error(debugError['errorLangFormat']);
       }else{
         fs.access(this.lang, fs.F_OK, (err) => {
@@ -64,18 +70,18 @@ class DiscordVote {
     }else{
       this.idioma = require('./LanguageFiles/en.json');
     }
-    //FIXME Eliminar este if y mostrar aviso de error?
+    //FIXME en caso de error de idioma, usar ingles?
     if(this.debug){
       if(langError){
-        console.log(debugError['langInfo'] + "(English)");
+        console.warn(debugError['langInfo'] + "(English)");
       }else{
         console.log(debugError['langInfo'] + JSON.stringify(this.lang, null, 2));
       }
     }
     if(((this.mode == 1) ? true : false) && this.checkTime > 0){
-      const intervalTime = this.checkTime; // Intervalo en milisegundos (1 minuto)
+      const intervalTime = this.checkTime / 1000; // Intervalo en milisegundos (1 minuto)
       setInterval(async () => {
-        this.checkVotaciones();
+        this.checkVotes();
       }, intervalTime);
     }
 
@@ -92,8 +98,8 @@ class DiscordVote {
       }
       return true;
     }
-    if(!checkLangFileFormat(defaultLang, this.idioma)){
-      this.idioma = defaultLang;
+    if(!checkLangFileFormat(defaultIdioma, this.idioma)){
+      this.idioma = defaultIdioma;
     }
   }
 
@@ -305,7 +311,9 @@ class DiscordVote {
               idCanal: channelId, //Guardar el ID del canal de votacion
               titulo: title,
               fechaInicio: startTime.toISOString(), // Guardar la fecha y hora de inicio en formato ISO
-              fechaFin: endTime.toISOString() // Guardar la fecha y hora de finalización en formato ISO
+              fechaFin: endTime.toISOString(), // Guardar la fecha y hora de finalización en formato ISO
+              reaccion1: modeAdvanced['yesReaction'], //Reaccion utilizada
+              reaccion2: modeAdvanced['noReaction'] //Reaccion utilizada
             };
           }else{
             votaciones[message.id] = {
@@ -315,10 +323,21 @@ class DiscordVote {
               idCanal: channelId, //Guardar el ID del canal de votacion
               titulo: title,
               fechaInicio: startTime.toISOString(), // Guardar la fecha y hora de inicio en formato ISO
-              fechaFin: null // Guardar la fecha y hora de finalización en formato ISO
+              fechaFin: null, // Guardar la fecha y hora de finalización en formato ISO
+              reaccion1: modeAdvanced['yesReaction'], //Reaccion utilizada
+              reaccion2: modeAdvanced['noReaction'] //Reaccion utilizada
           }
         }
       if(debug)
+       var votacionJson = JSON.stringify(votaciones[message.id]);
+       console.debug(debugError['voteJson'].replace('${votacionJson}', votacionJson));
+          fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
+          if (err) {
+            console.error(err);
+          }
+        });
+
+      if(debug) //FIXME Mirar que es esto?
        var votacionJson = JSON.stringify(votaciones[message.id]);
        console.debug(debugError['voteJson'].replace('${votacionJson}', votacionJson));
           fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
@@ -339,7 +358,7 @@ class DiscordVote {
   }
 
 
-  checkVotaciones(client = this.client, debug = this.debug) {
+  checkVotes(client = this.client, debug = this.debug) {
     const debugError = this.idioma['DEBUG-ERROR'];
     const modeNormal = this.idioma['MODE-NORMAL'];
     const modeAdvanced = this.idioma['MODE-ADVANCED'];
@@ -430,19 +449,19 @@ class DiscordVote {
             // Obtener la cantidad de reacciones de cada tipo
             const reactions = message.reactions.cache;
             
-            const upvoteUsers = await reactions.get(modeAdvanced['yesReaction']).users.fetch();
-            const downvoteUsers = await reactions.get(modeAdvanced['noReaction']).users.fetch();
+            const upvoteUsers = await reactions.get(votaciones[idMensaje].reaccion1).users.fetch();
+            const downvoteUsers = await reactions.get(votaciones[idMensaje].reaccion2).users.fetch();
           
             // Eliminar las reacciones de los usuarios que hayan reaccionado con ambos emojis
             const usersToRemove = upvoteUsers.filter(user => downvoteUsers.has(user.id));
             usersToRemove.forEach(user => {
               if (user.bot) return;
-              reactions.get(modeAdvanced['yesReaction']).users.remove(user.id);
-              reactions.get(modeAdvanced['noReaction']).users.remove(user.id);
+              reactions.get(votaciones[idMensaje].reaccion1).users.remove(user.id);
+              reactions.get(votaciones[idMensaje].reaccion2).users.remove(user.id);
             });
               
-              const upvotes = reactions.get(modeAdvanced['yesReaction']).count - 1; // Restar 1 para excluir la reacción del bot
-              const downvotes = reactions.get(modeAdvanced['noReaction']).count - 1; // Restar 1 para excluir la reacción del bot
+              const upvotes = reactions.get(votaciones[idMensaje].reaccion1).count - 1; // Restar 1 para excluir la reacción del bot
+              const downvotes = reactions.get(votaciones[idMensaje].reaccion2).count - 1; // Restar 1 para excluir la reacción del bot
               if(debug)
                 console.debug(debugError['AdvancedFinalResults'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
               message.reactions.removeAll().catch(error => console.error(debugError['errorRemoveReactions'], error));
@@ -532,19 +551,19 @@ class DiscordVote {
           // Obtener la cantidad de reacciones de cada tipo
           const reactions = message.reactions.cache;
           
-          const upvoteUsers = await reactions.get(modeAdvanced['yesReaction']).users.fetch();
-          const downvoteUsers = await reactions.get(modeAdvanced['noReaction']).users.fetch();
+          const upvoteUsers = await reactions.get(votaciones[idMensaje].reaccion1).users.fetch();
+          const downvoteUsers = await reactions.get(votaciones[idMensaje].reaccion2).users.fetch();
         
           // Eliminar las reacciones de los usuarios que hayan reaccionado con ambos emojis
           const usersToRemove = upvoteUsers.filter(user => downvoteUsers.has(user.id));
           usersToRemove.forEach(user => {
             if (user.bot) return;
-            reactions.get(modeAdvanced['yesReaction']).users.remove(user.id);
-            reactions.get(modeAdvanced['noReaction']).users.remove(user.id);
+            reactions.get(votaciones[idMensaje].reaccion1).users.remove(user.id);
+            reactions.get(votaciones[idMensaje].reaccion2).users.remove(user.id);
           });
             
-            const upvotes = reactions.get(modeAdvanced['yesReaction']).count - 1; // Restar 1 para excluir la reacción del bot
-            const downvotes = reactions.get(modeAdvanced['noReaction']).count - 1; // Restar 1 para excluir la reacción del bot
+            const upvotes = reactions.get(votaciones[idMensaje].reaccion1).count - 1; // Restar 1 para excluir la reacción del bot
+            const downvotes = reactions.get(votaciones[idMensaje].reaccion2).count - 1; // Restar 1 para excluir la reacción del bot
             if(debug)
               console.debug(debugError['AdvancedFinalResultsWithoutTime'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
 
