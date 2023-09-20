@@ -1,14 +1,14 @@
-//USAR RAMAS PARA LAS UPDATES!!
+//USAR RAMAS PARA LAS UPDATES Y EL PROJECTO PARA LOS APUNTES!!
 
 //TODO Cambiar el comentario de debug de los idiomas!
 
-// Traducir todo a ingles Imagenes incluidas.
+//Traducir todo a ingles Imagenes incluidas.
 
-//Cambiar el defualtLang ( por lo menos a la hora de leer los ficheros) y añadir en lang el mensaje de que reinicie para aplicar cambios (una vez se cree el nuevo fichero de lang custom). Linea 58
+//Cambiar el defaultLang (por lo menos a la hora de leer los ficheros) y añadir en lang el mensaje de que reinicie para aplicar cambios (una vez se cree el nuevo fichero de lang custom). Linea 58
 
 //Comprobar si los idiomas funcionan al ser un paquete
 
-//FIXME Hacer que compruebe si el fichero del lenguaje es valido! (Version 1.1.1?)
+//TODO Hacer que compruebe si el fichero del lenguaje es valido! (Version 1.1.1?)
 
 /*FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
 En caso de que la reaccion no este, por la version 1.0.X por ejemplo, usar el del lang por ejemplo?
@@ -70,7 +70,7 @@ class DiscordVote {
     }else{
       this.idioma = require('./LanguageFiles/en.json');
     }
-    //FIXME en caso de error de idioma, usar ingles?
+    //FIXME en caso de error de idioma, usar ingles y mostrar mensaje (V1.1.1?)?
     if(this.debug){
       if(langError){
         console.warn(debugError['langInfo'] + "(English)");
@@ -79,7 +79,7 @@ class DiscordVote {
       }
     }
     if(((this.mode == 1) ? true : false) && this.checkTime > 0){
-      const intervalTime = this.checkTime / 1000; // Intervalo en milisegundos (1 minuto)
+      const intervalTime = this.checkTime * 1000; // Intervalo en milisegundos (1 minuto)
       setInterval(async () => {
         this.checkVotes();
       }, intervalTime);
@@ -337,7 +337,7 @@ class DiscordVote {
           }
         });
 
-      if(debug) //FIXME Mirar que es esto?
+      if(debug)
        var votacionJson = JSON.stringify(votaciones[message.id]);
        console.debug(debugError['voteJson'].replace('${votacionJson}', votacionJson));
           fs.writeFile(this.savePath, JSON.stringify(votaciones, null, 2), err => {
