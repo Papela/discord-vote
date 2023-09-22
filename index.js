@@ -4,11 +4,13 @@
 
 //Traducir todo a ingles Imagenes incluidas.
 
-//Cambiar el defaultLang (por lo menos a la hora de leer los ficheros) y añadir en lang el mensaje de que reinicie para aplicar cambios (una vez se cree el nuevo fichero de lang custom). Linea 58
+//Cambiar el defaultLang (por lo menos a la hora de leer los ficheros) y añadir en lang el mensaje de que reinicie para aplicar cambios (una vez se cree el nuevo fichero de lang custom). Linea 61
 
-//Comprobar si los idiomas funcionan al ser un paquete
+//Comprobar si el fichero default existe (Version 1.1.1)
 
-//TODO Hacer que compruebe si el fichero del lenguaje es valido! (Version 1.1.1?)
+//Arreglar los mensajes repetidos en el debug (en checkVotes)
+
+//TODO Hacer que compruebe si el fichero del lenguaje es valido! (Version 1.1.1)
 
 /*FIXME A la hora de contar los votos (en modo 1) saber el tipo de reacciones, guardandolos en el json tambien (No se puede leer: 🥔 si la votacion de antes era: ✅).
 En caso de que la reaccion no este, por la version 1.0.X por ejemplo, usar el del lang por ejemplo?
@@ -56,8 +58,8 @@ class DiscordVote {
         fs.access(this.lang, fs.F_OK, (err) => {
           if (err) {
           console.warn(debugError['creatingFile']);
-          fs.createReadStream('./discord-vote/LanguageFiles/en.json').pipe(fs.createWriteStream(this.lang));
-          this.idioma = JSON.parse(fs.readFileSync('./discord-vote/LanguageFiles/en.json', 'utf8'));
+          fs.createReadStream('./node_modules/discord-vote/LanguageFiles/en.json').pipe(fs.createWriteStream(this.lang));
+          this.idioma = JSON.parse(fs.readFileSync('./node_modules/discord-vote/LanguageFiles/en.json', 'utf8'));
           console.log("Mensaje de fichero de idioma custom creado, reiniciar para aplicar cambios.");
         }else{
           this.idioma = JSON.parse(fs.readFileSync(this.lang, 'utf8'));
@@ -478,7 +480,7 @@ class DiscordVote {
               // Editar el mensaje de votación con los resultados
               const VotacionResultados = new EmbedBuilder()
                 .setTitle(votacion.titulo)
-                .setDescription( modeAdvanced['descriptionEnded'].replace('[yesReaction]',modeAdvanced['yesReaction']).replace('[noReaction]',modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes).replace('${Math.floor(endTime.getTime() / 1000)}', Math.floor(endTime.getTime() / 1000)))
+                .setDescription( modeAdvanced['descriptionEnded'].replace('[yesReaction]', votaciones[idMensaje].reaccion1).replace('[noReaction]',votaciones[idMensaje].reaccion2).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes).replace('${Math.floor(endTime.getTime() / 1000)}', Math.floor(endTime.getTime() / 1000)))
                 .setColor(color)
                 .setTimestamp();
                 await message.edit({ embeds: [VotacionResultados] });                                                         
@@ -565,7 +567,7 @@ class DiscordVote {
             const upvotes = reactions.get(votaciones[idMensaje].reaccion1).count - 1; // Restar 1 para excluir la reacción del bot
             const downvotes = reactions.get(votaciones[idMensaje].reaccion2).count - 1; // Restar 1 para excluir la reacción del bot
             if(debug)
-              console.debug(debugError['AdvancedFinalResultsWithoutTime'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
+              console.debug(debugError['AdvancedFinalResultsWithoutTime'].replace('[yesReaction]', votaciones[idMensaje].reaccion1).replace('[noReaction]', votaciones[idMensaje].reaccion2).replace('${upvotes}', upvotes).replace('${downvotes}', downvotes));
 
             let color = 8463563;
           if(upvotes > downvotes){
@@ -579,7 +581,7 @@ class DiscordVote {
             // Editar el mensaje de votación con los resultados
             const VotacionResultados = new EmbedBuilder()
               .setTitle(votacion.titulo)
-              .setDescription(modeAdvanced['description'].replace('[yesReaction]', modeAdvanced['yesReaction']).replace('[noReaction]', modeAdvanced['noReaction']).replace('${upvotes}',upvotes).replace('${downvotes}',downvotes))
+              .setDescription(modeAdvanced['description'].replace('[yesReaction]', votaciones[idMensaje].reaccion1).replace('[noReaction]', votaciones[idMensaje].reaccion2).replace('${upvotes}',upvotes).replace('${downvotes}',downvotes))
               .setColor(color)
               .setTimestamp();
               await message.edit({ embeds: [VotacionResultados] });
